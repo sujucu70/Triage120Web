@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>trIAge120 — A Practice for Enterprise AI Deployment</title>
+<meta name="description" content="Production, not pilots. We build enterprise AI systems, operate them, and transfer them to you in 120 days.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aleo:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Alegreya+Sans:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOKENS — closed palette, derived opacities only
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --loden: #4D5D45;
+  --loden-dark: #3a4a33;
+  --tabaco: #A85A2D;
+  --bruma: #E6E8E4;
+  --tinta: #141414;
+  --blanco: #FFFFFF;
+
+  --loden-10: rgba(77,93,69,0.10);
+  --loden-50: rgba(77,93,69,0.50);
+  --tabaco-10: rgba(168,90,45,0.10);
+
+  --tinta-08: rgba(20,20,20,0.08);
+  --tinta-15: rgba(20,20,20,0.15);
+  --tinta-35: rgba(20,20,20,0.35);
+  --tinta-50: rgba(20,20,20,0.50);
+  --tinta-60: rgba(20,20,20,0.60);
+  --tinta-65: rgba(20,20,20,0.65);
+  --tinta-80: rgba(20,20,20,0.80);
+
+  --blanco-08: rgba(255,255,255,0.08);
+  --blanco-12: rgba(255,255,255,0.12);
+  --blanco-15: rgba(255,255,255,0.15);
+  --blanco-25: rgba(255,255,255,0.25);
+  --blanco-35: rgba(255,255,255,0.35);
+  --blanco-50: rgba(255,255,255,0.50);
+  --blanco-60: rgba(255,255,255,0.60);
+  --blanco-65: rgba(255,255,255,0.65);
+  --blanco-80: rgba(255,255,255,0.80);
+
+  --font-display: 'Aleo', serif;
+  --font-body: 'Alegreya Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --container-max: 1120px;
+  --container-pad: 40px;
+
+  /* Rhythm — tuned per section */
+  --section-py: 120px;        /* default */
+  --section-py-heavy: 144px;  /* manifesto, BOT, team */
+  --section-py-mobile: 80px;
+
+  --space-label-title: 40px;
+  --space-title-body: 56px;
+  --space-title-grid: 64px;
+
+  --easing: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--tinta);
+  background: var(--blanco);
+  line-height: 1.65;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Variant gating: only the active direction shows. */
+.variant { display: none; }
+body[data-direction="a"] .variant.variant-a,
+body[data-direction="b"] .variant.variant-b,
+body[data-direction="c"] .variant.variant-c { display: block; }
+.variant-grid { display: none; }
+body[data-direction="a"] .variant-grid.variant-a,
+body[data-direction="b"] .variant-grid.variant-b,
+body[data-direction="c"] .variant-grid.variant-c { display: grid; }
+.variant-flex { display: none; }
+body[data-direction="a"] .variant-flex.variant-a,
+body[data-direction="b"] .variant-flex.variant-b,
+body[data-direction="c"] .variant-flex.variant-c { display: flex; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PRIMITIVES
+   ───────────────────────────────────────────────────────────────────────────── */
+.font-display { font-family: var(--font-display); }
+.font-body { font-family: var(--font-body); }
+.font-mono { font-family: var(--font-mono); }
+
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-pad);
+}
+@media (max-width: 768px) {
+  .container { padding: 0 24px; }
+}
+
+section {
+  padding: var(--section-py) 0;
+}
+section.heavy { padding: var(--section-py-heavy) 0; }
+@media (max-width: 768px) {
+  section, section.heavy { padding: var(--section-py-mobile) 0; }
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tabaco);
+  margin-bottom: var(--space-label-title);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::before {
+  content: '';
+  width: 18px;
+  height: 1px;
+  background: var(--tabaco);
+  /* opacity removed — 1px tabaco on any brand bg passes 3:1 at full strength */
+}
+/* a11y: tabaco-on-bruma fails AA normal at 4.10:1 — swap text to loden (5.74).
+   Tabaco hairline prefix stays as the categorical accent. */
+.pillars .section-label,
+.territories .section-label,
+.contact .section-label {
+  color: var(--loden);
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--easing), transform 0.7s var(--easing);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.10s; }
+.reveal-d2 { transition-delay: 0.20s; }
+.reveal-d3 { transition-delay: 0.30s; }
+.reveal-d4 { transition-delay: 0.40s; }
+.reveal-d5 { transition-delay: 0.50s; }
+
+/* Buttons */
+.btn-primary, .btn-secondary {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 32px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  letter-spacing: 0.01em;
+  border-radius: 0;
+  transition: background 0.25s, transform 0.15s var(--easing), border-color 0.25s, color 0.25s;
+}
+.btn-primary {
+  background: var(--loden);
+  color: var(--blanco);
+  border: 1px solid var(--loden);
+}
+.btn-primary:hover { background: var(--loden-dark); border-color: var(--loden-dark); transform: translateY(-1px); }
+.btn-secondary {
+  background: transparent;
+  color: var(--tinta);
+  /* a11y: was rgba(20,20,20,0.2) = 1.56:1, failed 3:1 UI contrast. tinta-50 = 3.37 ✓ */
+  border: 1px solid var(--tinta-50);
+}
+.btn-secondary:hover { border-color: var(--tinta); transform: translateY(-1px); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NAV
+   ───────────────────────────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--tinta-08);
+  transition: box-shadow 0.3s;
+}
+nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
+
+.nav-inner {
+  max-width: var(--container-max); margin: 0 auto;
+  padding: 0 var(--container-pad); height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 22px; color: var(--tinta);
+  text-decoration: none; letter-spacing: -0.5px;
+}
+.nav-logo .ia { color: var(--loden); font-weight: 700; }
+.nav-logo .sup { font-size: 13px; vertical-align: super; }
+
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 12px; letter-spacing: 0.04em;
+  color: var(--tinta); text-decoration: none;
+  opacity: 0.6; transition: opacity 0.25s;
+}
+.nav-links a:hover { opacity: 1; }
+.nav-links .nav-cta {
+  opacity: 1; color: var(--loden);
+  border: 1px solid var(--loden);
+  padding: 6px 16px; border-radius: 2px;
+  transition: background 0.25s, color 0.25s;
+}
+.nav-links .nav-cta:hover { background: var(--loden); color: var(--blanco); }
+
+.nav-burger {
+  display: none; background: none; border: none; cursor: pointer;
+  width: 28px; height: 20px; position: relative;
+}
+.nav-burger span {
+  display: block; width: 100%; height: 1.5px;
+  background: var(--tinta); position: absolute; left: 0;
+  transition: all 0.3s;
+}
+.nav-burger span:nth-child(1) { top: 0; }
+.nav-burger span:nth-child(2) { top: 9px; }
+.nav-burger span:nth-child(3) { top: 18px; }
+
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.97); backdrop-filter: blur(12px);
+  z-index: 99; padding: 40px 24px;
+}
+.mobile-menu.open { display: flex; flex-direction: column; gap: 24px; }
+.mobile-menu a {
+  font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.04em;
+  color: var(--tinta); text-decoration: none; padding: 8px 0;
+  border-bottom: 0.5px solid var(--tinta-08);
+}
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-burger { display: block; }
+  .nav-inner { padding: 0 24px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HERO — shared scaffold
+   ───────────────────────────────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding-top: 120px; padding-bottom: 80px;
+  position: relative; overflow: hidden;
+}
+.hero .container { width: 100%; }
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 80px;
+  align-items: center;
+}
+@media (max-width: 960px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 56px; }
+}
+
+.hero-left { max-width: 640px; }
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(44px, 6.5vw, 76px);
+  font-weight: 400; line-height: 1.04;
+  color: var(--tinta);
+  margin-bottom: 28px;
+  letter-spacing: -1.5px;
+}
+
+.hero-descriptor {
+  font-family: var(--font-body);
+  font-size: clamp(18px, 2.2vw, 22px);
+  font-weight: 300; line-height: 1.55;
+  color: var(--tinta); opacity: 0.78;
+  margin-bottom: 48px;
+  max-width: 520px;
+}
+
+.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+/* Stat bar relocated above the descriptor: it now reads as the problem the
+   headline answers, instead of a tail after the CTA. Tighter spacing too. */
+.stat-bar {
+  border-top: 1px solid var(--tinta-15);
+  border-bottom: 1px solid var(--tinta-15);
+  margin-top: 36px;
+  margin-bottom: 40px;
+  padding: 22px 0 22px;
+  display: flex; align-items: baseline; gap: 14px;
+  flex-wrap: wrap;
+  max-width: 560px;
+}
+.stat-bar .number {
+  font-family: var(--font-display); font-size: 44px;
+  font-weight: 300; color: var(--tabaco); line-height: 1;
+  letter-spacing: -1px;
+}
+.stat-bar .label {
+  font-size: 16px; font-weight: 300;
+  color: var(--tinta); opacity: 0.78;
+}
+.stat-bar .source {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--tinta-65);
+  margin-left: auto;
+  letter-spacing: 0.08em;
+}
+
+/* Secondary CTA: text link, sits next to the primary button. */
+.cta-text {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--loden);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  padding: 14px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.25s, transform 0.15s var(--easing);
+}
+.cta-text .arrow {
+  display: inline-block;
+  transition: transform 0.2s var(--easing);
+}
+.cta-text:hover {
+  color: var(--loden-dark);
+}
+.cta-text:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* ── HERO RIGHT — Direction A · Editorial specimen ────────────────────── */
+.hero-right-a {
+  /* display owned by .variant-flex gating cascade */
+  flex-direction: column;
+  border-left: 1px solid var(--tinta-15);
+  padding-left: 48px;
+  min-height: 380px;
+}
+.hr-a-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  /* a11y: was opacity 0.5 = 3.37:1 (fail). tinta-65 = 5.68 ✓ */
+  color: var(--tinta-65);
+  margin-bottom: 24px;
+}
+.hr-a-numeral {
+  font-family: var(--font-display);
+  font-size: clamp(140px, 16vw, 200px);
+  font-weight: 300; line-height: 0.9;
+  color: var(--tinta);
+  letter-spacing: -6px;
+  margin-bottom: 8px;
+}
+.hr-a-numeral .unit {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  vertical-align: top;
+  color: var(--tabaco);
+  letter-spacing: 0.16em;
+  margin-left: 10px;
+  position: relative; top: 16px;
+}
+.hr-a-caption {
+  font-family: var(--font-display);
+  font-size: 16px; font-style: italic;
+  color: var(--tinta); opacity: 0.75;
+  margin-bottom: 28px;
+}
+.hr-a-caption .accent { color: var(--loden); font-style: normal; font-weight: 500; }
+.hr-a-index {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 14px 16px;
+  align-items: baseline;
+  padding-top: 16px;
+  border-top: 1px solid var(--tinta-08);
+}
+.hr-a-index .row {
+  display: contents;
+}
+.hr-a-index .row span:nth-child(1),
+.hr-a-index .row span:nth-child(3) {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  /* a11y: was opacity 0.45 = 2.96:1. tinta-65 ✓ */
+  color: var(--tinta-65);
+  letter-spacing: 0.08em;
+}
+.hr-a-index .row span:nth-child(2) {
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 400;
+  color: var(--tinta); opacity: 0.85;
+}
+.hr-a-index .row.is-final span:nth-child(1) { color: var(--loden); opacity: 1; }
+.hr-a-index .row.is-final span:nth-child(2) { color: var(--loden); font-weight: 500; opacity: 1; }
+.hr-a-index .divider {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--tinta-08);
+}
+
+/* ── HERO RIGHT — Direction B · Operator ledger ───────────────────────── */
+.hero-right-b {
+  background: var(--blanco);
+  border: 1px solid var(--tinta-15);
+  border-left: 3px solid var(--loden);
+  padding: 32px 36px;
+  position: relative;
+}
+.hr-b-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding-bottom: 18px; margin-bottom: 18px;
+  border-bottom: 0.5px solid var(--tinta-15);
+}
+.hr-b-head .id { color: var(--tinta-65); }
+.hr-b-head .status { color: var(--loden); }
+.hr-b-head .status::before {
+  content: ''; display: inline-block;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--loden); margin-right: 8px;
+  vertical-align: 1px;
+}
+.hr-b-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 0.5px dashed var(--tinta-08);
+  align-items: baseline;
+}
+.hr-b-row:last-child { border-bottom: 0; }
+.hr-b-row .k {
+  font-family: var(--font-mono);
+  font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  /* a11y: was opacity 0.5 = 3.37:1. tinta-65 ✓ */
+  color: var(--tinta-65);
+}
+.hr-b-row .v {
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 400; line-height: 1.4;
+  color: var(--tinta);
+}
+.hr-b-row .v .em { color: var(--loden); font-weight: 500; }
+.hr-b-row .v .mono { font-family: var(--font-mono); font-size: 12px; opacity: 0.7; }
+.hr-b-foot {
+  margin-top: 18px; padding-top: 16px;
+  border-top: 0.5px solid var(--tinta-15);
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  /* a11y: was opacity 0.4 = 2.6:1. tinta-65 ✓ */
+  color: var(--tinta-65);
+  display: flex; justify-content: space-between;
+}
+
+/* ── HERO RIGHT — Direction C · Display specimen ──────────────────────── */
+.hero-right-c {
+  /* display owned by .variant-flex gating cascade */
+  position: relative;
+  flex-direction: column; justify-content: center;
+  min-height: 480px;
+  border-left: 1px solid var(--tinta-15);
+  padding-left: 32px;
+}
+.hr-c-stamp {
+  font-family: var(--font-mono);
+  font-size: 10.5px; letter-spacing: 0.20em; text-transform: uppercase;
+  color: var(--tabaco);
+  margin-bottom: 24px;
+}
+.hr-c-numeral {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(220px, 28vw, 360px);
+  line-height: 0.82;
+  color: var(--tinta);
+  letter-spacing: -14px;
+  margin-left: -12px;
+  margin-bottom: 12px;
+}
+.hr-c-numeral .zero {
+  color: var(--loden);
+}
+.hr-c-rule {
+  width: 60%;
+  height: 1px;
+  background: var(--tinta);
+  opacity: 0.3;
+  margin: 18px 0 22px;
+}
+.hr-c-meta {
+  font-family: var(--font-mono);
+  font-size: 11.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  /* a11y: tinta-65 = 5.68 ✓ (was opacity 0.6 ≈ 4.88, passed by a hair) */
+  color: var(--tinta-65);
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+}
+.hr-c-meta .sep { opacity: 0.5; }
+
+@media (max-width: 960px) {
+  .hero-right-a, .hero-right-c { border-left: 0; padding-left: 0; min-height: 0; }
+  .hr-a-numeral { font-size: 120px; }
+  .hr-c-numeral { font-size: 180px; letter-spacing: -8px; margin-left: -6px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MANIFESTO
+   ───────────────────────────────────────────────────────────────────────────── */
+.manifesto {
+  background: var(--blanco);
+  border-top: 0.5px solid var(--tinta-08);
+}
+.manifesto-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 96px;
+}
+@media (max-width: 768px) {
+  .manifesto-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+.manifesto-title {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 400; line-height: 1.25;
+  color: var(--tinta);
+  letter-spacing: -0.3px;
+}
+.manifesto-body p {
+  font-size: 17px; font-weight: 300; line-height: 1.75;
+  color: var(--tinta); opacity: 0.82;
+  margin-bottom: 28px;
+}
+.manifesto-body p:last-child { margin-bottom: 0; }
+.manifesto-body p:first-child {
+  /* Doctrine line elevated to pull-quote weight — "We ship the system." is the
+     brand's defining sentence and earns the page's second-loudest moment
+     after the hero headline. */
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.2vw, 38px);
+  line-height: 1.28;
+  font-weight: 400;
+  color: var(--tinta);
+  letter-spacing: -0.5px;
+  margin-bottom: 40px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PILLARS
+   ───────────────────────────────────────────────────────────────────────────── */
+.pillars { background: var(--bruma); }
+.pillars-title {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 400; line-height: 1.25;
+  margin-bottom: var(--space-title-grid);
+  max-width: 520px;
+  letter-spacing: -0.3px;
+}
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--tinta-08);
+}
+@media (max-width: 768px) { .pillars-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .pillars-grid { grid-template-columns: 1fr; } }
+.pillar-card {
+  background: var(--blanco);
+  padding: 44px 36px;
+  position: relative;
+}
+.pillar-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0;
+  width: 0; height: 2px;
+  background: var(--loden);
+  transition: width 0.4s var(--easing);
+}
+.pillar-card:hover::before { width: 100%; }
+.pillar-number {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--tabaco);
+  letter-spacing: 0.10em;
+  margin-bottom: 24px;
+}
+.pillar-name {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 400;
+  margin-bottom: 14px;
+  letter-spacing: -0.2px;
+}
+.pillar-desc {
+  font-size: 15px; font-weight: 300; line-height: 1.65;
+  color: var(--tinta); opacity: 0.68;
+}
+.pillars-footer {
+  margin-top: 56px;
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 400; font-style: italic;
+  color: var(--tinta); opacity: 0.7;
+  max-width: 520px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BOT / METHOD
+   ───────────────────────────────────────────────────────────────────────────── */
+.bot-section {
+  background: var(--blanco);
+  border-top: 0.5px solid var(--tinta-08);
+}
+.bot-header {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 96px;
+  margin-bottom: 80px;
+}
+@media (max-width: 768px) {
+  .bot-header { grid-template-columns: 1fr; gap: 24px; margin-bottom: 56px; }
+}
+.bot-title {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 400; line-height: 1.25;
+  letter-spacing: -0.3px;
+}
+.bot-desc {
+  font-size: 17px; font-weight: 300; line-height: 1.75;
+  color: var(--tinta); opacity: 0.82;
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  position: relative;
+}
+@media (max-width: 768px) { .timeline { grid-template-columns: 1fr; } }
+.timeline::before {
+  content: '';
+  position: absolute; top: 20px; left: 40px; right: 40px;
+  height: 1px; background: var(--tinta-15);
+}
+@media (max-width: 768px) {
+  .timeline::before { top: 0; bottom: 0; left: 20px; width: 1px; height: auto; right: auto; }
+}
+.timeline-step {
+  text-align: center; position: relative; padding: 0 16px;
+}
+@media (max-width: 768px) {
+  .timeline-step { text-align: left; padding: 0 0 32px 52px; }
+}
+.timeline-dot {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--blanco);
+  border: 1.5px solid var(--tinta-15);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 22px;
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--tinta); position: relative; z-index: 1;
+}
+@media (max-width: 768px) {
+  .timeline-dot { position: absolute; left: 0; top: 0; margin: 0; }
+}
+.timeline-step:last-child .timeline-dot {
+  background: var(--loden); border-color: var(--loden); color: var(--blanco);
+}
+.timeline-name {
+  font-family: var(--font-body); font-size: 15px;
+  font-weight: 500; margin-bottom: 4px;
+}
+.timeline-sub {
+  font-family: var(--font-mono); font-size: 11px;
+  /* a11y: was opacity 0.45 = 2.96. tinta-65 ✓ */
+  color: var(--tinta-65);
+}
+.bot-punchline {
+  text-align: center; margin-top: 80px;
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 400; font-style: italic;
+  color: var(--loden);
+}
+@media (max-width: 768px) { .bot-punchline { text-align: left; margin-top: 48px; } }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TERRITORIES
+   ───────────────────────────────────────────────────────────────────────────── */
+.territories { background: var(--bruma); }
+.territories-title {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 400;
+  margin-bottom: var(--space-title-grid);
+  letter-spacing: -0.3px;
+}
+.territories-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+}
+@media (max-width: 768px) { .territories-grid { grid-template-columns: 1fr; } }
+.territory-card {
+  background: var(--blanco);
+  padding: 56px 48px;
+  border-left: 3px solid var(--loden);
+  transition: transform 0.3s var(--easing);
+}
+.territory-card:nth-child(2) { border-left-color: var(--tabaco); }
+.territory-card:hover { transform: translateY(-2px); }
+.territory-label {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--tabaco); margin-bottom: 24px;
+}
+.territory-name {
+  font-family: var(--font-display);
+  font-size: 26px; font-weight: 400;
+  margin-bottom: 18px; letter-spacing: -0.3px;
+}
+.territory-desc {
+  font-size: 16px; font-weight: 300; line-height: 1.7;
+  color: var(--tinta); opacity: 0.72;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROOF — three variants
+   ───────────────────────────────────────────────────────────────────────────── */
+.proof {
+  background: var(--blanco);
+  border-top: 0.5px solid var(--tinta-08);
+}
+.proof-eyebrow-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: var(--space-title-grid);
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.proof-title {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 400; line-height: 1.25;
+  letter-spacing: -0.3px;
+  max-width: 560px;
+}
+.proof-since {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  /* a11y: was opacity 0.45 = 2.96. tinta-65 ✓ */
+  color: var(--tinta-65);
+}
+
+/* ── PROOF · A — Magnified stats + industry ledger ────────────────────── */
+.proof-a-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--tinta-08);
+  border-top: 1px solid var(--tinta-15);
+  border-bottom: 1px solid var(--tinta-15);
+}
+@media (max-width: 768px) { .proof-a-stats { grid-template-columns: 1fr; } }
+.proof-a-stat {
+  background: var(--blanco);
+  padding: 64px 40px 56px;
+  position: relative;
+}
+.proof-a-stat::before {
+  content: attr(data-marker);
+  position: absolute; top: 20px; left: 24px;
+  font-family: var(--font-mono);
+  font-size: 10.5px; letter-spacing: 0.16em;
+  color: var(--tabaco);
+}
+.proof-a-stat .num {
+  font-family: var(--font-display);
+  font-size: clamp(72px, 9vw, 112px);
+  font-weight: 300; line-height: 0.95;
+  color: var(--tinta);
+  letter-spacing: -3px;
+  margin-bottom: 16px;
+}
+.proof-a-stat .num.is-final { color: var(--loden); }
+.proof-a-stat .lbl {
+  font-family: var(--font-body);
+  font-size: 15px; font-weight: 400; line-height: 1.5;
+  color: var(--tinta); opacity: 0.7;
+  max-width: 260px;
+}
+.proof-a-industries {
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border: 1px solid var(--tinta-08);
+  border-left: 0; border-right: 0;
+}
+@media (max-width: 768px) {
+  .proof-a-industries { grid-template-columns: repeat(2, 1fr); }
+}
+.proof-a-industries .item {
+  font-family: var(--font-mono);
+  font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--tinta); opacity: 0.7;
+  padding: 20px 16px;
+  border-left: 1px solid var(--tinta-08);
+  text-align: center;
+}
+.proof-a-industries .item:first-child { border-left: 0; }
+@media (max-width: 768px) {
+  .proof-a-industries .item:nth-child(odd) { border-left: 0; }
+  .proof-a-industries .item { border-top: 1px solid var(--tinta-08); }
+  .proof-a-industries .item:nth-child(-n+2) { border-top: 0; }
+}
+.proof-a-caption {
+  margin-top: 28px;
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.14em;
+  /* a11y: was opacity 0.4 = 2.6. tinta-65 ✓ */
+  color: var(--tinta-65);
+  text-align: center;
+}
+
+/* ── PROOF · B — Operator ledger table ────────────────────────────────── */
+.proof-b-table {
+  border-top: 1px solid var(--tinta);
+}
+.proof-b-row {
+  display: grid;
+  grid-template-columns: 80px 1.2fr 2fr 0.8fr;
+  align-items: baseline;
+  gap: 24px;
+  padding: 36px 0;
+  border-bottom: 1px solid var(--tinta-15);
+}
+@media (max-width: 768px) {
+  .proof-b-row { grid-template-columns: 60px 1fr; row-gap: 6px; padding: 24px 0; }
+  .proof-b-row .col-3, .proof-b-row .col-4 { grid-column: 1 / -1; }
+}
+.proof-b-row .col-1 {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--tabaco);
+  align-self: center;
+}
+.proof-b-row .col-2 {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 7vw, 88px);
+  font-weight: 300; line-height: 0.95;
+  color: var(--tinta);
+  letter-spacing: -2px;
+}
+.proof-b-row .col-2 .suffix {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  vertical-align: top;
+  color: var(--tabaco);
+  letter-spacing: 0.10em;
+  margin-left: 6px;
+}
+.proof-b-row .col-3 {
+  font-family: var(--font-body);
+  font-size: 17px; line-height: 1.5; font-weight: 400;
+  color: var(--tinta);
+  max-width: 380px;
+}
+.proof-b-row .col-3 .sub {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase;
+  /* a11y: was opacity 0.45 = 2.96. tinta-65 ✓ */
+  color: var(--tinta-65);
+  margin-top: 6px;
+}
+.proof-b-row .col-4 {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  /* a11y: was opacity 0.55 = 4.08. tinta-65 ✓ */
+  color: var(--tinta-65);
+  text-align: right;
+}
+@media (max-width: 768px) { .proof-b-row .col-4 { text-align: left; } }
+.proof-b-row.is-final .col-2 { color: var(--loden); }
+.proof-b-row.is-final .col-1 { color: var(--loden); }
+.proof-b-footer {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 0.5px solid var(--tinta-08);
+  border-bottom: 0.5px solid var(--tinta-08);
+}
+@media (max-width: 768px) { .proof-b-footer { grid-template-columns: 1fr; } }
+.proof-b-footer .blk {
+  padding: 24px 20px;
+  border-left: 0.5px solid var(--tinta-08);
+}
+.proof-b-footer .blk:first-child { border-left: 0; }
+.proof-b-footer .blk .k {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  /* a11y: was opacity 0.45 = 2.96. tinta-65 ✓ */
+  color: var(--tinta-65);
+  margin-bottom: 10px;
+}
+.proof-b-footer .blk .v {
+  font-family: var(--font-body); font-size: 14px; font-weight: 400;
+  color: var(--tinta); line-height: 1.5;
+}
+
+/* ── PROOF · C — Display specimen, one number dominates ───────────────── */
+.proof-c-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 64px;
+  align-items: end;
+  border-top: 1px solid var(--tinta);
+  padding-top: 48px;
+}
+@media (max-width: 960px) {
+  .proof-c-grid { grid-template-columns: 1fr; gap: 32px; padding-top: 32px; }
+}
+.proof-c-side {
+  display: flex; flex-direction: column; gap: 40px;
+}
+.proof-c-mini {
+  border-top: 0.5px solid var(--tinta-15);
+  padding-top: 22px;
+}
+.proof-c-mini .num {
+  font-family: var(--font-display);
+  font-size: 56px; font-weight: 300; line-height: 1;
+  color: var(--tinta);
+  letter-spacing: -1.5px;
+  margin-bottom: 8px;
+}
+.proof-c-mini .lbl {
+  font-family: var(--font-body); font-size: 15px;
+  color: var(--tinta); opacity: 0.7;
+  max-width: 240px;
+}
+.proof-c-hero {
+  position: relative;
+  text-align: right;
+}
+.proof-c-hero .stamp {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--tabaco);
+  margin-bottom: 24px;
+  display: block;
+}
+.proof-c-hero .num {
+  font-family: var(--font-display);
+  font-size: clamp(220px, 28vw, 360px);
+  font-weight: 300; line-height: 0.82;
+  color: var(--loden);
+  letter-spacing: -14px;
+  display: block;
+  margin-bottom: 8px;
+}
+.proof-c-hero .lbl {
+  font-family: var(--font-display);
+  font-style: italic; font-size: 19px;
+  color: var(--tinta); opacity: 0.78;
+  max-width: 360px; margin-left: auto;
+}
+@media (max-width: 960px) {
+  .proof-c-hero { text-align: left; }
+  .proof-c-hero .num { font-size: 160px; letter-spacing: -6px; }
+  .proof-c-hero .lbl { margin-left: 0; }
+}
+.proof-c-industries {
+  margin-top: 56px;
+  padding-top: 22px;
+  border-top: 0.5px solid var(--tinta-15);
+  display: flex; flex-wrap: wrap; gap: 0;
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  /* a11y: was opacity 0.5 = 3.37. tinta-65 ✓ */
+  color: var(--tinta-65);
+}
+.proof-c-industries span {
+  padding: 4px 14px;
+  border-right: 1px solid var(--tinta-15);
+}
+.proof-c-industries span:last-child { border-right: 0; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TEAM — dark Tinta section, three variants
+   ───────────────────────────────────────────────────────────────────────────── */
+.team { background: var(--tinta); color: var(--blanco); }
+/* a11y: on Tinta, tabaco text fails AA (3.65). Tabaco is demoted to graphical
+   accents only (hairlines, underlines, ordinals at large-text size).
+   All small labels use Blanco at ≥0.65 opacity. */
+.team .section-label { color: var(--blanco-80); }
+.team .section-label::before { background: var(--tabaco); }
+.team-eyebrow-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: var(--space-title-grid);
+  flex-wrap: wrap; gap: 24px;
+}
+.team-title {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 400;
+  color: var(--blanco);
+  max-width: 640px;
+  letter-spacing: -0.3px;
+}
+.team-stamp {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  /* a11y: was blanco-35 = 3.25. blanco-65 ≈ 8.2 ✓ */
+  color: var(--blanco-65);
+}
+
+/* ── TEAM · A — Monogram cards ────────────────────────────────────────── */
+.team-grid-a {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--blanco-15);
+}
+@media (max-width: 768px) { .team-grid-a { grid-template-columns: 1fr; } }
+.team-grid-a .card {
+  padding: 48px 40px 48px 0;
+  border-bottom: 1px solid var(--blanco-12);
+  border-right: 1px solid var(--blanco-12);
+}
+.team-grid-a .card:last-child { border-right: 0; }
+@media (max-width: 768px) {
+  .team-grid-a .card { border-right: 0; padding: 40px 0; }
+}
+.team-grid-a .card { padding-left: 32px; }
+.team-grid-a .card:first-child { padding-left: 0; }
+.team-grid-a .mark {
+  font-family: var(--font-display);
+  font-size: 96px; font-weight: 400;
+  /* a11y: loden on tinta = 2.60, fails even 3:1 for large text.
+     Monograms switch to Blanco; loden categorical signal stays in
+     the section-label hairline + underline detail elsewhere. */
+  color: var(--blanco);
+  line-height: 0.9;
+  letter-spacing: -3px;
+  margin-bottom: 32px;
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+.team-grid-a .mark .id {
+  font-family: var(--font-mono);
+  font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  /* a11y: was blanco-35 = 3.25. blanco-65 ✓ */
+  color: var(--blanco-65);
+  align-self: flex-start;
+  margin-top: 8px;
+}
+.team-grid-a .name {
+  font-family: var(--font-display); font-size: 22px; font-weight: 400;
+  margin-bottom: 6px; letter-spacing: -0.2px;
+}
+.team-grid-a .role {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase;
+  /* a11y: was tabaco = 3.65 on tinta, fails AA normal.
+     Switch to blanco-80 (~12:1). Tabaco hairline accent above
+     (section-label::before) still carries the categorical signal. */
+  color: var(--blanco-80);
+  margin-bottom: 22px;
+}
+.team-grid-a .bio {
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 300; line-height: 1.6;
+  color: var(--blanco-60);
+}
+
+/* ── TEAM · B — Personnel records ─────────────────────────────────────── */
+.team-grid-b {
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-top: 1px solid var(--blanco-15);
+}
+.team-grid-b .card {
+  display: grid;
+  grid-template-columns: 80px 160px 1fr;
+  gap: 32px;
+  padding: 48px 0;
+  border-bottom: 1px solid var(--blanco-12);
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .team-grid-b .card { grid-template-columns: 1fr; gap: 16px; padding: 32px 0; }
+}
+.team-grid-b .card .id-col {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  /* a11y: was blanco-35 = 3.25. blanco-65 ✓ */
+  color: var(--blanco-65);
+  padding-top: 8px;
+}
+.team-grid-b .card .id-col .num {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-style: italic;
+  /* a11y: was loden = 2.60. Tabaco at 38px = large text, 3.65 ✓ (passes 3:1) */
+  color: var(--tabaco);
+  line-height: 1;
+  margin-top: 8px;
+  letter-spacing: 0;
+}
+.team-grid-b .card .mark-col {
+  font-family: var(--font-display);
+  font-size: 64px; font-weight: 400;
+  color: var(--blanco);
+  line-height: 0.9; letter-spacing: -2px;
+  padding-top: 4px;
+}
+.team-grid-b .card .body-col .name {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 400;
+  margin-bottom: 6px; letter-spacing: -0.2px;
+}
+.team-grid-b .card .body-col .role {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase;
+  /* a11y: tabaco fails on tinta at 11px. blanco-80 ✓ */
+  color: var(--blanco-80);
+  margin-bottom: 20px;
+}
+.team-grid-b .card .body-col .bio {
+  font-family: var(--font-body);
+  font-size: 15px; font-weight: 300; line-height: 1.7;
+  color: var(--blanco-60);
+  max-width: 560px;
+}
+
+/* ── TEAM · C — Display specimen monograms ────────────────────────────── */
+.team-grid-c {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--blanco-12);
+  border-top: 1px solid var(--blanco-15);
+  border-bottom: 1px solid var(--blanco-15);
+}
+@media (max-width: 768px) { .team-grid-c { grid-template-columns: 1fr; } }
+.team-grid-c .card {
+  background: var(--tinta);
+  padding: 48px 32px 40px;
+  display: flex; flex-direction: column;
+  min-height: 460px;
+}
+.team-grid-c .card .id {
+  font-family: var(--font-mono);
+  font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  /* a11y: tabaco fails on tinta at 10.5px. blanco-80 ✓ */
+  color: var(--blanco-80);
+  margin-bottom: 16px;
+}
+.team-grid-c .card .mark {
+  font-family: var(--font-display);
+  font-style: italic; font-weight: 300;
+  font-size: clamp(140px, 14vw, 180px);
+  line-height: 0.85;
+  color: var(--blanco);
+  letter-spacing: -6px;
+  margin: 0 0 8px -6px;
+  flex: 0 0 auto;
+}
+.team-grid-c .card .underline {
+  /* a11y: loden hairline on tinta = 2.60, fails 3:1 graphical.
+     Tabaco = 3.65 ✓ and reads as the categorical accent. */
+  width: 64px; height: 1px; background: var(--tabaco); margin-bottom: 28px;
+}
+.team-grid-c .card .name {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 400;
+  margin-bottom: 6px; letter-spacing: -0.2px;
+}
+.team-grid-c .card .role {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase;
+  /* a11y: tabaco fails on tinta at 11px. blanco-80 ✓ */
+  color: var(--blanco-80);
+  margin-bottom: 20px;
+}
+.team-grid-c .card .bio {
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 300; line-height: 1.6;
+  color: var(--blanco-60);
+  margin-top: auto;
+}
+
+/* TEAM tagline & credentials (shared across all directions) */
+.team-divider {
+  border: none;
+  border-top: 0.5px solid var(--blanco-08);
+  margin: 80px 0 40px;
+}
+.team-tagline {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 400; font-style: italic;
+  color: var(--blanco); opacity: 0.78;
+  margin-bottom: 40px;
+  max-width: 720px;
+}
+.credentials { display: flex; flex-wrap: wrap; gap: 10px; }
+.credential-pill {
+  font-family: var(--font-mono);
+  font-size: 11.5px; letter-spacing: 0.04em;
+  padding: 7px 16px;
+  /* a11y: was blanco-15 = 1.55:1 border, fails 3:1 UI. blanco-35 = 3.25 ✓ */
+  border: 0.5px solid var(--blanco-35);
+  border-radius: 2px;
+  color: var(--blanco-50);
+  transition: border-color 0.25s, color 0.25s;
+}
+.credential-pill:hover { border-color: var(--blanco-60); color: var(--blanco-80); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CONTACT
+   ───────────────────────────────────────────────────────────────────────────── */
+.contact { background: var(--bruma); }
+.contact-title {
+  font-family: var(--font-display);
+  font-size: 36px; font-weight: 400;
+  margin-bottom: 18px; letter-spacing: -0.5px;
+}
+.contact-sub {
+  font-size: 18px; font-weight: 300; line-height: 1.55;
+  color: var(--tinta); opacity: 0.65;
+  margin-bottom: 64px;
+  max-width: 440px;
+}
+.contact-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+@media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+.contact-card {
+  background: var(--blanco);
+  padding: 44px 32px;
+  text-align: center;
+  transition: transform 0.3s var(--easing);
+}
+.contact-card:hover { transform: translateY(-2px); }
+.contact-icon {
+  width: 48px; height: 48px; margin: 0 auto 24px;
+  background: var(--loden-10); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.contact-icon svg {
+  width: 22px; height: 22px;
+  stroke: var(--loden); fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.contact-card-title {
+  font-family: var(--font-body);
+  font-size: 17px; font-weight: 500;
+  margin-bottom: 8px;
+}
+.contact-card-desc {
+  font-size: 14px; font-weight: 300; line-height: 1.55;
+  color: var(--tinta); opacity: 0.6;
+  margin-bottom: 24px;
+}
+.contact-card a {
+  font-family: var(--font-mono);
+  font-size: 12px; color: var(--loden);
+  text-decoration: none;
+  border-bottom: 1px solid var(--loden);
+  padding-bottom: 2px;
+  transition: opacity 0.25s;
+}
+.contact-card a:hover { opacity: 0.6; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FOOTER
+   ───────────────────────────────────────────────────────────────────────────── */
+footer {
+  background: var(--blanco);
+  border-top: 0.5px solid var(--tinta-08);
+  padding: 36px 0;
+}
+.footer-inner {
+  display: flex; justify-content: space-between; align-items: center;
+}
+@media (max-width: 768px) {
+  .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+}
+.footer-stamp {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.08em;
+  /* a11y: was opacity 0.35 = 2.23. tinta-65 ✓ */
+  color: var(--tinta-65);
+}
+.footer-links { display: flex; gap: 24px; }
+.footer-links a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  /* a11y: was opacity 0.35 = 2.23. tinta-65 ✓ */
+  color: var(--tinta-65);
+  text-decoration: none;
+  transition: opacity 0.25s, color 0.25s;
+}
+.footer-links a:hover { color: var(--tinta); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE POLISH — narrow tablet (≤600) and small mobile (≤480)
+   The site already breaks 4-col → 2-col → 1-col at 768 and 480 for grids,
+   and stacks the hero at 960. These rules clean up the tight cases that
+   surfaced after a 375 + 768 audit.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  /* Hero stat-bar — let source flow inline instead of right-aligning on wrap */
+  .stat-bar { gap: 10px 14px; }
+  .stat-bar .source { margin-left: 0; }
+
+  /* Hero · Direction B — the 120px key column overran narrow widths.
+     Stack key above value so long values get the full row. */
+  .hero-right-b { padding: 24px 22px; }
+  .hr-b-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 12px 0;
+  }
+  .hr-b-row .k { font-size: 10px; letter-spacing: 0.12em; }
+  .hr-b-row .v { font-size: 13.5px; }
+  .hr-b-head { padding-bottom: 14px; margin-bottom: 14px; font-size: 10px; }
+  .hr-b-foot { padding-top: 14px; margin-top: 14px; font-size: 9.5px; }
+
+  /* Card paddings: less gutter, more content on narrow screens */
+  .pillar-card { padding: 36px 26px; }
+  .territory-card { padding: 40px 28px; }
+  .contact-card { padding: 36px 24px; }
+  .proof-a-stat { padding: 52px 28px 40px; }
+  .proof-b-row { gap: 14px; padding: 28px 0; }
+  .team-grid-c .card { padding: 40px 24px 32px; min-height: 380px; }
+
+  /* Manifesto doctrine line: bump line-height for the smaller cap size */
+  .manifesto-body p:first-child { line-height: 1.3; }
+}
+
+@media (max-width: 480px) {
+  /* Display-scale glyphs need explicit caps at the smallest widths so the
+     italic numerals don't overflow the 327px-ish content area. */
+  .hr-c-numeral {
+    font-size: 130px;
+    letter-spacing: -4px;
+    margin-left: -3px;
+  }
+  .hr-c-stamp { font-size: 10px; letter-spacing: 0.16em; }
+  .hr-c-meta { font-size: 11px; letter-spacing: 0.12em; gap: 4px 12px; }
+
+  .proof-c-hero .num { font-size: 130px; letter-spacing: -4px; }
+  .proof-c-mini .num { font-size: 44px; }
+  .proof-c-grid { gap: 24px; }
+
+  /* Team monogram caps */
+  .team-grid-a .mark { font-size: 72px; letter-spacing: -2px; margin-bottom: 24px; }
+  .team-grid-b .card .mark-col { font-size: 52px; }
+  .team-grid-c .card .mark { font-size: 120px; letter-spacing: -4px; }
+
+  /* Section titles: 32 → 28 at the smallest widths so they don't wrap raggedly */
+  .pillars-title,
+  .bot-title,
+  .territories-title,
+  .proof-title,
+  .team-title { font-size: 28px; }
+  .manifesto-title { font-size: 28px; }
+  .contact-title { font-size: 30px; }
+
+  /* Proof-A industry cell: tighter so labels don't run into divider */
+  .proof-a-industries .item { font-size: 11px; padding: 16px 8px; letter-spacing: 0.10em; }
+}
+</style>
+</head>
+<body data-direction="a">
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo font-display">tr<span class="ia">IA</span>ge<span class="sup">120</span></a>
+    <div class="nav-links">
+      <a href="#practice">The practice</a>
+      <a href="#method">Method</a>
+      <a href="#team">Team</a>
+      <a href="#contact" class="nav-cta">Contact</a>
+    </div>
+    <button class="nav-burger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#practice" onclick="closeMenu()">The practice</a>
+  <a href="#method" onclick="closeMenu()">Method</a>
+  <a href="#team" onclick="closeMenu()">Team</a>
+  <a href="#contact" onclick="closeMenu()">Contact</a>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="hero" id="hero" data-screen-label="Hero">
+  <div class="container">
+    <div class="hero-grid">
+      <!-- LEFT (shared) -->
+      <div class="hero-left">
+        <p class="section-label reveal">trIAge120 — A Practice — Madrid</p>
+        <h1 class="reveal reveal-d1">Production,<br>not pilots.</h1>
+        <div class="stat-bar reveal reveal-d2">
+          <span class="number font-display">88%</span>
+          <span class="label">of AI pilots never reach production.</span>
+          <span class="source">IDC</span>
+        </div>
+        <p class="hero-descriptor reveal reveal-d3">A practice for enterprise AI deployment.<br>We build it. We run it. We hand it over.</p>
+        <div class="hero-ctas reveal reveal-d4">
+          <a href="#contact" class="btn-primary">Let's talk about the diagnostic</a>
+          <a href="#method" class="cta-text">See the BOT-120 model <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- RIGHT · Direction A — Editorial specimen -->
+      <div class="hero-right-a variant-flex variant-a reveal reveal-d2">
+        <p class="hr-a-eyebrow">Deployment model</p>
+        <div class="hr-a-numeral font-display">120<span class="unit">DAYS</span></div>
+        <p class="hr-a-caption">Build · Operate · <span class="accent">Transfer.</span></p>
+        <div class="hr-a-index">
+          <div class="row"><span>M0</span><span>Setup</span><span>0 – 14d</span></div>
+          <div class="divider"></div>
+          <div class="row"><span>M1</span><span>Readiness</span><span>14 – 45d</span></div>
+          <div class="divider"></div>
+          <div class="row"><span>M2</span><span>Activation</span><span>45 – 75d</span></div>
+          <div class="divider"></div>
+          <div class="row"><span>M3</span><span>Validation</span><span>75 – 105d</span></div>
+          <div class="divider"></div>
+          <div class="row is-final"><span>M4</span><span>Transfer</span><span>105 – 120d</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT · Direction B — Operator ledger -->
+      <div class="hero-right-b variant variant-b reveal reveal-d2">
+        <div class="hr-b-head">
+          <span class="id">Record · TR120-26-001</span>
+          <span class="status">Active</span>
+        </div>
+        <div class="hr-b-row">
+          <span class="k">Practice</span>
+          <span class="v">Madrid, ES <span class="mono">· EST. 2026</span></span>
+        </div>
+        <div class="hr-b-row">
+          <span class="k">Model</span>
+          <span class="v"><span class="em">BOT-120</span> — Build · Operate · Transfer</span>
+        </div>
+        <div class="hr-b-row">
+          <span class="k">Partners</span>
+          <span class="v">03 <span class="mono">· IP · SJ · GA</span></span>
+        </div>
+        <div class="hr-b-row">
+          <span class="k">Layers</span>
+          <span class="v">04 <span class="mono">· Analytics · Delivery · Sales · Strategy</span></span>
+        </div>
+        <div class="hr-b-row">
+          <span class="k">Sectors</span>
+          <span class="v">06 <span class="mono">· Insurance · Energy · Telecom · Healthcare · Aviation · Food delivery</span></span>
+        </div>
+        <div class="hr-b-row">
+          <span class="k">Outcome</span>
+          <span class="v">Day 121 — transferred.</span>
+        </div>
+        <div class="hr-b-foot">
+          <span>FILE · TR120-26-001</span>
+          <span>REV. 01</span>
+        </div>
+      </div>
+
+      <!-- RIGHT · Direction C — Display specimen -->
+      <div class="hero-right-c variant-flex variant-c reveal reveal-d2">
+        <p class="hr-c-stamp">Deployment · No. 120</p>
+        <div class="hr-c-numeral font-display">12<span class="zero">0</span></div>
+        <div class="hr-c-rule"></div>
+        <p class="hr-c-meta">
+          <span>Days</span><span class="sep">·</span>
+          <span>Build</span><span class="sep">·</span>
+          <span>Operate</span><span class="sep">·</span>
+          <span>Transfer</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MANIFESTO
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="manifesto heavy" id="practice" data-screen-label="Manifesto">
+  <div class="container">
+    <div class="manifesto-grid">
+      <div>
+        <p class="section-label reveal">01 · The gap</p>
+        <h2 class="manifesto-title reveal reveal-d1">Enterprise AI has a last-mile problem.</h2>
+      </div>
+      <div class="manifesto-body reveal reveal-d2">
+        <p>The market is full of slides about AI. We ship the system.</p>
+        <p>Every enterprise we've worked with had the same story: they bought the platform, hired the consultants, ran the pilot — and then nothing moved to production. The gap was never technology. It was the four operational layers that no platform provides and no advisor wants to own: the analytics to know where to start, the delivery discipline to build at enterprise grade, the commercial engine to capture value instead of competing it away, and the strategy to make the whole thing sustainable.</p>
+        <p>trIAge120 is a practice built to close that gap. We don't advise. We build the system, we operate it until it works, and we transfer it to the client — with the methodology, the tooling and the discipline built in. In 120 days. That's the BOT model: Build, Operate, Transfer. It's not a framework on a slide. It's a delivery contract.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PILLARS
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="pillars" id="pillars" data-screen-label="Pillars">
+  <div class="container">
+    <p class="section-label reveal">02 · What we do</p>
+    <h2 class="pillars-title reveal reveal-d1">Four operational layers no platform provides.</h2>
+    <div class="pillars-grid">
+      <div class="pillar-card reveal">
+        <p class="pillar-number">01</p>
+        <h3 class="pillar-name">Analytics</h3>
+        <p class="pillar-desc">Know where to start. Diagnostic, readiness scoring, quantified ROI baseline before anyone deploys.</p>
+      </div>
+      <div class="pillar-card reveal reveal-d1">
+        <p class="pillar-number">02</p>
+        <h3 class="pillar-name">Delivery</h3>
+        <p class="pillar-desc">Build at enterprise grade. Methodology, multi-agent architecture, QA frameworks, production deployment.</p>
+      </div>
+      <div class="pillar-card reveal reveal-d2">
+        <p class="pillar-number">03</p>
+        <h3 class="pillar-name">Sales</h3>
+        <p class="pillar-desc">Capture value, don't destroy it. Positioning, pricing tools, branded collateral, demand generation.</p>
+      </div>
+      <div class="pillar-card reveal reveal-d3">
+        <p class="pillar-number">04</p>
+        <h3 class="pillar-name">Strategy</h3>
+        <p class="pillar-desc">Make it sustainable. Business model, channel strategy, competitive moat, hybrid AI+human positioning.</p>
+      </div>
+    </div>
+    <p class="pillars-footer reveal">We provide all four. In 120 days.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     BOT MODEL
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="bot-section heavy" id="method" data-screen-label="Method">
+  <div class="container">
+    <p class="section-label reveal">03 · How we work</p>
+    <div class="bot-header">
+      <h2 class="bot-title reveal">Build · Operate · Transfer.</h2>
+      <p class="bot-desc reveal reveal-d1">We don't hand you a report and wish you luck. We embed with your team, build the system in production, operate it until it works — and transfer the whole thing to you. Methodology, tooling, discipline. Day 121, it's yours.</p>
+    </div>
+    <div class="timeline reveal reveal-d2">
+      <div class="timeline-step">
+        <div class="timeline-dot">M0</div>
+        <p class="timeline-name">Setup</p>
+        <p class="timeline-sub">0 – 14d</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-dot">M1</div>
+        <p class="timeline-name">Readiness</p>
+        <p class="timeline-sub">14 – 45d</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-dot">M2</div>
+        <p class="timeline-name">Activation</p>
+        <p class="timeline-sub">45 – 75d</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-dot">M3</div>
+        <p class="timeline-name">Validation</p>
+        <p class="timeline-sub">75 – 105d</p>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-dot">M4</div>
+        <p class="timeline-name">Transfer</p>
+        <p class="timeline-sub">105 – 120d</p>
+      </div>
+    </div>
+    <p class="bot-punchline reveal">Day 121, it's yours.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     TERRITORIES
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="territories" id="territories" data-screen-label="Territories">
+  <div class="container">
+    <p class="section-label reveal">04 · Who we work with</p>
+    <h2 class="territories-title reveal reveal-d1">Two deployment territories.</h2>
+    <div class="territories-grid">
+      <div class="territory-card reveal reveal-d2">
+        <p class="territory-label">Territory 01</p>
+        <h3 class="territory-name">Enterprises</h3>
+        <p class="territory-desc">Companies deploying AI into their operations — from diagnostic to production in 120 days. We close the gap between platform and business impact.</p>
+      </div>
+      <div class="territory-card reveal reveal-d3">
+        <p class="territory-label">Territory 02</p>
+        <h3 class="territory-name">BPOs</h3>
+        <p class="territory-desc">Outsourcers turning voice AI into a competitive advantage — not a race to the bottom. Four operational layers that transform a platform into a services moat.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PROOF — three variants
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="proof" id="proof" data-screen-label="Proof">
+  <div class="container">
+    <div class="proof-eyebrow-row">
+      <div>
+        <p class="section-label reveal">05 · Proof of work</p>
+        <h2 class="proof-title reveal reveal-d1">Field-tested, not theoretical.</h2>
+      </div>
+      <p class="proof-since reveal reveal-d2">Track record · 2025 – present</p>
+    </div>
+
+    <!-- Variant A — Magnified stats + industry ledger -->
+    <div class="variant variant-a">
+      <div class="proof-a-stats reveal">
+        <div class="proof-a-stat" data-marker="01">
+          <p class="num font-display">8</p>
+          <p class="lbl">Enterprise accounts opened</p>
+        </div>
+        <div class="proof-a-stat" data-marker="02">
+          <p class="num font-display">3</p>
+          <p class="lbl">Production deployments live</p>
+        </div>
+        <div class="proof-a-stat" data-marker="03">
+          <p class="num is-final font-display">120</p>
+          <p class="lbl">Days — field-tested model</p>
+        </div>
+      </div>
+      <div class="proof-a-industries reveal reveal-d1">
+        <span class="item">Insurance</span>
+        <span class="item">Energy</span>
+        <span class="item">Telecom</span>
+        <span class="item">Healthcare</span>
+        <span class="item">Aviation</span>
+        <span class="item">Food delivery</span>
+      </div>
+      <p class="proof-a-caption reveal reveal-d2">Six sectors · One model · Production deployments only</p>
+    </div>
+
+    <!-- Variant B — Operator ledger table -->
+    <div class="variant variant-b">
+      <div class="proof-b-table reveal">
+        <div class="proof-b-row">
+          <div class="col-1">Line 01</div>
+          <div class="col-2 font-display">8</div>
+          <div class="col-3">Enterprise accounts opened<span class="sub">Direct partners · 2025 cohort</span></div>
+          <div class="col-4">Open</div>
+        </div>
+        <div class="proof-b-row">
+          <div class="col-1">Line 02</div>
+          <div class="col-2 font-display">3</div>
+          <div class="col-3">Production deployments live<span class="sub">Past pilot · in operations</span></div>
+          <div class="col-4">Operating</div>
+        </div>
+        <div class="proof-b-row is-final">
+          <div class="col-1">Line 03</div>
+          <div class="col-2 font-display">120<span class="suffix">DAYS</span></div>
+          <div class="col-3">Field-tested model<span class="sub">Build · Operate · Transfer</span></div>
+          <div class="col-4">Validated</div>
+        </div>
+      </div>
+      <div class="proof-b-footer reveal reveal-d1">
+        <div class="blk">
+          <p class="k">Sectors deployed</p>
+          <p class="v">Insurance · Energy · Telecom · Healthcare · Aviation · Food delivery</p>
+        </div>
+        <div class="blk">
+          <p class="k">Geography</p>
+          <p class="v">Spain · EU · LATAM corridor</p>
+        </div>
+        <div class="blk">
+          <p class="k">Sources</p>
+          <p class="v">Practice internal · IDC · Gartner · a16z</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant C — Display specimen, one number dominates -->
+    <div class="variant variant-c">
+      <div class="proof-c-grid reveal">
+        <div class="proof-c-side">
+          <div class="proof-c-mini">
+            <p class="num font-display">8</p>
+            <p class="lbl">Enterprise accounts opened</p>
+          </div>
+          <div class="proof-c-mini">
+            <p class="num font-display">3</p>
+            <p class="lbl">Production deployments live</p>
+          </div>
+        </div>
+        <div class="proof-c-hero">
+          <span class="stamp">The number that matters</span>
+          <span class="num font-display">120</span>
+          <p class="lbl">Days — field-tested model.</p>
+        </div>
+      </div>
+      <div class="proof-c-industries reveal reveal-d1">
+        <span>Insurance</span>
+        <span>Energy</span>
+        <span>Telecom</span>
+        <span>Healthcare</span>
+        <span>Aviation</span>
+        <span>Food delivery</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     TEAM — three variants
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="team heavy" id="team" data-screen-label="Team">
+  <div class="container">
+    <div class="team-eyebrow-row">
+      <div>
+        <p class="section-label reveal">06 · The partners</p>
+        <h2 class="team-title reveal reveal-d1">Three partners run the four layers.</h2>
+      </div>
+      <p class="team-stamp reveal reveal-d2">Founding partnership · Madrid · 2026</p>
+    </div>
+
+    <!-- Variant A — Monogram cards -->
+    <div class="team-grid-a variant-grid variant-a">
+      <div class="card reveal">
+        <div class="mark"><span>IP</span></div>
+        <h3 class="name">Isi Porquicho</h3>
+        <p class="role">CEO · Sales &amp; Strategy</p>
+        <p class="bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.<br>Stanford GSB · Wharton · IESE.</p>
+      </div>
+      <div class="card reveal reveal-d1">
+        <div class="mark"><span>SJ</span></div>
+        <h3 class="name">Susana Juan</h3>
+        <p class="role">CGO · AI Opportunity &amp; Analytics</p>
+        <p class="bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.<br>MBA · EOI Business School · ISDI Executive AI.</p>
+      </div>
+      <div class="card reveal reveal-d2">
+        <div class="mark"><span>GA</span></div>
+        <h3 class="name">Guillermo Arbelo</h3>
+        <p class="role">Delivery &amp; AI Engineering</p>
+        <p class="bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.<br>MBA Executive Comillas.</p>
+      </div>
+    </div>
+
+    <!-- Variant B — Personnel records -->
+    <div class="team-grid-b variant-grid variant-b">
+      <div class="card reveal">
+        <div class="id-col">P-01<span class="num font-display">i</span></div>
+        <div class="mark-col font-display">IP</div>
+        <div class="body-col">
+          <h3 class="name">Isi Porquicho</h3>
+          <p class="role">CEO · Sales &amp; Strategy</p>
+          <p class="bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.<br>Stanford GSB · Wharton · IESE.</p>
+        </div>
+      </div>
+      <div class="card reveal reveal-d1">
+        <div class="id-col">P-02<span class="num font-display">ii</span></div>
+        <div class="mark-col font-display">SJ</div>
+        <div class="body-col">
+          <h3 class="name">Susana Juan</h3>
+          <p class="role">CGO · AI Opportunity &amp; Analytics</p>
+          <p class="bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.<br>MBA · EOI Business School · ISDI Executive AI.</p>
+        </div>
+      </div>
+      <div class="card reveal reveal-d2">
+        <div class="id-col">P-03<span class="num font-display">iii</span></div>
+        <div class="mark-col font-display">GA</div>
+        <div class="body-col">
+          <h3 class="name">Guillermo Arbelo</h3>
+          <p class="role">Delivery &amp; AI Engineering</p>
+          <p class="bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.<br>MBA Executive Comillas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant C — Display specimen monograms -->
+    <div class="team-grid-c variant-grid variant-c">
+      <div class="card reveal">
+        <div class="mark font-display">IP</div>
+        <div class="underline"></div>
+        <h3 class="name">Isi Porquicho</h3>
+        <p class="role">CEO · Sales &amp; Strategy</p>
+        <p class="bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.<br>Stanford GSB · Wharton · IESE.</p>
+      </div>
+      <div class="card reveal reveal-d1">
+        <div class="mark font-display">SJ</div>
+        <div class="underline"></div>
+        <h3 class="name">Susana Juan</h3>
+        <p class="role">CGO · AI Opportunity &amp; Analytics</p>
+        <p class="bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.<br>MBA · EOI Business School · ISDI Executive AI.</p>
+      </div>
+      <div class="card reveal reveal-d2">
+        <div class="mark font-display">GA</div>
+        <div class="underline"></div>
+        <h3 class="name">Guillermo Arbelo</h3>
+        <p class="role">Delivery &amp; AI Engineering</p>
+        <p class="bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.<br>MBA Executive Comillas.</p>
+      </div>
+    </div>
+
+    <hr class="team-divider">
+    <p class="team-tagline reveal">Operators, not advisors — three partners who have personally built, sold and run the four layers.</p>
+    <div class="credentials reveal reveal-d1">
+      <span class="credential-pill">Stanford GSB</span>
+      <span class="credential-pill">Wharton</span>
+      <span class="credential-pill">IESE</span>
+      <span class="credential-pill">Comillas MBA</span>
+      <span class="credential-pill">Microsoft</span>
+      <span class="credential-pill">Telefónica</span>
+      <span class="credential-pill">IONOS</span>
+      <span class="credential-pill">Compaq</span>
+      <span class="credential-pill">CloudBlue</span>
+      <span class="credential-pill">Submer</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     CONTACT
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="contact" id="contact" data-screen-label="Contact">
+  <div class="container">
+    <p class="section-label reveal">07 · Get started</p>
+    <h2 class="contact-title reveal reveal-d1">Let's talk about the diagnostic.</h2>
+    <p class="contact-sub reveal reveal-d2">The first step is always the same: understand where you are, quantify the opportunity, and decide if it's worth building.</p>
+    <div class="contact-grid">
+      <div class="contact-card reveal reveal-d1">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </div>
+        <h3 class="contact-card-title">Book a call</h3>
+        <p class="contact-card-desc">30 minutes with one of the partners. No pitch, just diagnostic.</p>
+        <a href="#">Schedule on Calendly →</a>
+      </div>
+      <div class="contact-card reveal reveal-d2">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <h3 class="contact-card-title">Email us</h3>
+        <p class="contact-card-desc">For structured proposals or partnership inquiries.</p>
+        <a href="mailto:hello@triage120.com">hello@triage120.com →</a>
+      </div>
+      <div class="contact-card reveal reveal-d3">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        </div>
+        <h3 class="contact-card-title">Quick form</h3>
+        <p class="contact-card-desc">Name, company, and what you need. We'll get back within 24h.</p>
+        <a href="#">Fill the form →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-stamp">TRIAGE120 — A PRACTICE — MADRID — EST. 2026</span>
+      <div class="footer-links">
+        <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+        <a href="#">EN</a>
+        <a href="#" style="opacity: 0.2;">ES</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div id="tweaks-root"></div>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Nav scroll effect
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// Mobile menu
+function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+function closeMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
+
+// Smooth hero entrance
+window.addEventListener('load', () => {
+  document.querySelectorAll('.hero .reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 80 + i * 50);
+  });
+});
+</script>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "direction": "A · Editorial Refined"
+}/*EDITMODE-END*/;
+
+const DIRECTION_TO_KEY = {
+  "A · Editorial Refined": "a",
+  "B · Operator Ledger": "b",
+  "C · Display Specimen": "c"
+};
+
+function TweaksApp() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    const key = DIRECTION_TO_KEY[t.direction] || "a";
+    document.body.setAttribute("data-direction", key);
+    // Re-trigger reveals on direction change for the visible variants
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.reveal').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          el.classList.add('visible');
+        }
+      });
+    });
+  }, [t.direction]);
+
+  return (
+    <TweaksPanel title="Direction">
+      <TweakSection label="Overall feel" />
+      <TweakSelect
+        label="Direction"
+        value={t.direction}
+        options={Object.keys(DIRECTION_TO_KEY)}
+        onChange={(v) => setTweak('direction', v)}
+      />
+      <div style={{
+        marginTop: 4, fontSize: 11, lineHeight: 1.5,
+        color: 'rgba(41,38,27,.62)',
+        fontFamily: 'ui-sans-serif,system-ui,sans-serif'
+      }}>
+        <b style={{display:'block', fontSize:10, letterSpacing:'.08em', textTransform:'uppercase', color:'rgba(41,38,27,.45)', marginBottom:6}}>What changes</b>
+        Hero right side · Proof section · Team section.<br />
+        Manifesto, pillars, BOT, territories, contact stay constant.
+      </div>
+    </TweaksPanel>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('tweaks-root'));
+root.render(<TweaksApp />);
+</script>
+
+</body>
+</html>
