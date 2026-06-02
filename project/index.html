@@ -1206,6 +1206,24 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
   margin-top: auto;
 }
 
+/* TEAM — partner photos (replace monograms across all directions) */
+.team-photo {
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+  filter: grayscale(100%) contrast(1.04);
+  background: var(--tinta);
+  transition: filter 0.55s ease;
+}
+.card:hover .team-photo { filter: grayscale(0%) contrast(1); }
+.team-grid-a .team-photo-a { width: 100%; height: 248px; margin-bottom: 28px; }
+.team-grid-b .mark-col { padding-top: 4px; }
+.team-grid-b .team-photo-b { width: 100%; height: 200px; }
+.team-grid-c .team-photo-c { width: 100%; height: 288px; margin: 0 0 28px; flex: 0 0 auto; }
+@media (max-width: 768px) {
+  .team-grid-b .team-photo-b { height: 240px; max-width: 300px; }
+}
+
 /* TEAM tagline & credentials (shared across all directions) */
 .team-divider {
   border: none;
@@ -1744,24 +1762,24 @@ footer {
       <p class="team-stamp reveal reveal-d2">Founding partnership · Madrid · 2026</p>
     </div>
 
-    <!-- Variant A — Monogram cards -->
+    <!-- Variant A — Photo cards -->
     <div class="team-grid-a variant-grid variant-a">
       <div class="card reveal">
-        <div class="mark"><span>IP</span></div>
+        <img class="team-photo team-photo-a" src="uploads/IP.jpg" alt="Isi Porquicho">
         <h3 class="name">Isi Porquicho</h3>
-        <p class="role">CEO · Sales &amp; Strategy</p>
+        <p class="role">Partner Sales &amp; Strategy</p>
         <p class="bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.<br>Stanford GSB · Wharton · IESE.</p>
       </div>
       <div class="card reveal reveal-d1">
-        <div class="mark"><span>SJ</span></div>
+        <img class="team-photo team-photo-a" src="uploads/Arsys08.jpg" alt="Susana Juan">
         <h3 class="name">Susana Juan</h3>
-        <p class="role">CGO · AI Opportunity &amp; Analytics</p>
+        <p class="role">Partner Product Growth &amp; Analytics</p>
         <p class="bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.<br>MBA · EOI Business School · ISDI Executive AI.</p>
       </div>
       <div class="card reveal reveal-d2">
-        <div class="mark"><span>GA</span></div>
+        <img class="team-photo team-photo-a" src="uploads/GA.png" alt="Guillermo Arbelo">
         <h3 class="name">Guillermo Arbelo</h3>
-        <p class="role">Delivery &amp; AI Engineering</p>
+        <p class="role">Partner Delivery &amp; Operations</p>
         <p class="bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.<br>MBA Executive Comillas.</p>
       </div>
     </div>
@@ -1770,54 +1788,54 @@ footer {
     <div class="team-grid-b variant-grid variant-b">
       <div class="card reveal">
         <div class="id-col">P-01<span class="num font-display">i</span></div>
-        <div class="mark-col font-display">IP</div>
+        <div class="mark-col"><img class="team-photo team-photo-b" src="uploads/IP.jpg" alt="Isi Porquicho"></div>
         <div class="body-col">
           <h3 class="name">Isi Porquicho</h3>
-          <p class="role">CEO · Sales &amp; Strategy</p>
+          <p class="role">Partner Sales &amp; Strategy</p>
           <p class="bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.<br>Stanford GSB · Wharton · IESE.</p>
         </div>
       </div>
       <div class="card reveal reveal-d1">
         <div class="id-col">P-02<span class="num font-display">ii</span></div>
-        <div class="mark-col font-display">SJ</div>
+        <div class="mark-col"><img class="team-photo team-photo-b" src="uploads/Arsys08.jpg" alt="Susana Juan"></div>
         <div class="body-col">
           <h3 class="name">Susana Juan</h3>
-          <p class="role">CGO · AI Opportunity &amp; Analytics</p>
+          <p class="role">Partner Product Growth &amp; Analytics</p>
           <p class="bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.<br>MBA · EOI Business School · ISDI Executive AI.</p>
         </div>
       </div>
       <div class="card reveal reveal-d2">
         <div class="id-col">P-03<span class="num font-display">iii</span></div>
-        <div class="mark-col font-display">GA</div>
+        <div class="mark-col"><img class="team-photo team-photo-b" src="uploads/GA.png" alt="Guillermo Arbelo"></div>
         <div class="body-col">
           <h3 class="name">Guillermo Arbelo</h3>
-          <p class="role">Delivery &amp; AI Engineering</p>
+          <p class="role">Partner Delivery &amp; Operations</p>
           <p class="bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.<br>MBA Executive Comillas.</p>
         </div>
       </div>
     </div>
 
-    <!-- Variant C — Display specimen monograms -->
+    <!-- Variant C — Display specimen photos -->
     <div class="team-grid-c variant-grid variant-c">
       <div class="card reveal">
-        <div class="mark font-display">IP</div>
+        <img class="team-photo team-photo-c" src="uploads/IP.jpg" alt="Isi Porquicho">
         <div class="underline"></div>
         <h3 class="name">Isi Porquicho</h3>
-        <p class="role">CEO · Sales &amp; Strategy</p>
+        <p class="role">Partner Sales &amp; Strategy</p>
         <p class="bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.<br>Stanford GSB · Wharton · IESE.</p>
       </div>
       <div class="card reveal reveal-d1">
-        <div class="mark font-display">SJ</div>
+        <img class="team-photo team-photo-c" src="uploads/Arsys08.jpg" alt="Susana Juan">
         <div class="underline"></div>
         <h3 class="name">Susana Juan</h3>
-        <p class="role">CGO · AI Opportunity &amp; Analytics</p>
+        <p class="role">Partner Product Growth &amp; Analytics</p>
         <p class="bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.<br>MBA · EOI Business School · ISDI Executive AI.</p>
       </div>
       <div class="card reveal reveal-d2">
-        <div class="mark font-display">GA</div>
+        <img class="team-photo team-photo-c" src="uploads/GA.png" alt="Guillermo Arbelo">
         <div class="underline"></div>
         <h3 class="name">Guillermo Arbelo</h3>
-        <p class="role">Delivery &amp; AI Engineering</p>
+        <p class="role">Partner Delivery &amp; Operations</p>
         <p class="bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.<br>MBA Executive Comillas.</p>
       </div>
     </div>
