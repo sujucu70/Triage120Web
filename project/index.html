@@ -78,6 +78,40 @@ body {
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode overrides */
+body[data-theme="dark"] {
+  --tinta: #FFFFFF;
+  --blanco: #0f0f0f;
+  --bruma: #1a1a1a;
+
+  --tinta-08: rgba(255,255,255,0.08);
+  --tinta-15: rgba(255,255,255,0.15);
+  --tinta-35: rgba(255,255,255,0.35);
+  --tinta-50: rgba(255,255,255,0.50);
+  --tinta-60: rgba(255,255,255,0.60);
+  --tinta-65: rgba(255,255,255,0.65);
+  --tinta-80: rgba(255,255,255,0.80);
+
+  --blanco-08: rgba(15,15,15,0.08);
+  --blanco-12: rgba(15,15,15,0.12);
+  --blanco-15: rgba(15,15,15,0.15);
+  --blanco-25: rgba(15,15,15,0.25);
+  --blanco-35: rgba(15,15,15,0.35);
+  --blanco-50: rgba(15,15,15,0.50);
+  --blanco-60: rgba(15,15,15,0.60);
+  --blanco-65: rgba(15,15,15,0.65);
+  --blanco-80: rgba(15,15,15,0.80);
+}
+
+body[data-theme="dark"] nav {
+  background: rgba(15,15,15,0.92);
+}
+
+body[data-theme="dark"] .mobile-menu {
+  background: rgba(15,15,15,0.97);
 }
 
 /* Variant gating: only the active direction shows. */
@@ -226,6 +260,28 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
 }
 .nav-links .nav-cta:hover { background: var(--loden); color: var(--blanco); }
 
+.nav-controls {
+  display: flex; align-items: center; gap: 16px;
+}
+.nav-lang-toggle,
+.nav-theme-toggle {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px; letter-spacing: 0.04em;
+  color: var(--tinta); opacity: 0.6;
+  padding: 4px 8px; transition: opacity 0.25s, border-color 0.25s;
+  border-bottom: 1px solid transparent;
+}
+.nav-lang-toggle:hover,
+.nav-theme-toggle:hover {
+  opacity: 1;
+  border-bottom-color: var(--loden);
+}
+.nav-lang-toggle span,
+.nav-theme-toggle span {
+  display: inline-block;
+}
+
 .nav-burger {
   display: none; background: none; border: none; cursor: pointer;
   width: 28px; height: 20px; position: relative;
@@ -250,10 +306,18 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
   color: var(--tinta); text-decoration: none; padding: 8px 0;
   border-bottom: 0.5px solid var(--tinta-08);
 }
+.mobile-menu-controls {
+  display: none; flex-direction: column; gap: 16px; padding-top: 24px;
+  border-top: 0.5px solid var(--tinta-08);
+  margin-top: 24px;
+}
+
 @media (max-width: 768px) {
   .nav-links { display: none; }
+  .nav-controls { display: none; }
   .nav-burger { display: block; }
   .nav-inner { padding: 0 24px; }
+  .mobile-menu.open .mobile-menu-controls { display: flex; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1206,26 +1270,6 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
   margin-top: auto;
 }
 
-/* TEAM — partner photos (replace monograms across all directions) */
-.team-photo {
-  display: block;
-  object-fit: cover;
-  object-position: center top;
-  filter: grayscale(100%) contrast(1.04);
-  background: var(--tinta);
-  transition: filter 0.55s ease;
-}
-.card:hover .team-photo { filter: grayscale(0%) contrast(1); }
-.team-photo[src*="Arsys08"] { filter: grayscale(100%) contrast(1.04) brightness(0.84); }
-.card:hover .team-photo[src*="Arsys08"] { filter: grayscale(0%) contrast(1) brightness(0.88); }
-.team-grid-a .team-photo-a { width: 100%; height: 248px; margin-bottom: 28px; }
-.team-grid-b .mark-col { padding-top: 4px; }
-.team-grid-b .team-photo-b { width: 100%; height: 200px; }
-.team-grid-c .team-photo-c { width: 100%; height: 288px; margin: 0 0 28px; flex: 0 0 auto; }
-@media (max-width: 768px) {
-  .team-grid-b .team-photo-b { height: 240px; max-width: 300px; }
-}
-
 /* TEAM tagline & credentials (shared across all directions) */
 .team-divider {
   border: none;
@@ -1409,6 +1453,298 @@ footer {
   /* Proof-A industry cell: tighter so labels don't run into divider */
   .proof-a-industries .item { font-size: 11px; padding: 16px 8px; letter-spacing: 0.10em; }
 }
+
+/* Partner images normalization */
+.team-grid-a .mark {
+  width: 160px !important;
+  height: 160px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 32px !important;
+  flex-shrink: 0;
+}
+
+.team-grid-a .mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.team-grid-b .card .mark-col {
+  width: 140px !important;
+  height: 140px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  flex-shrink: 0;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.team-grid-c .card .mark {
+  width: 160px !important;
+  height: 160px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  margin: 0 auto 16px !important;
+  font-size: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+@media (max-width: 768px) {
+  .team-grid-a .mark { width: 120px !important; height: 120px !important; margin-bottom: 24px !important; }
+  .team-grid-b .card .mark-col { width: 100px !important; height: 100px !important; }
+  .team-grid-c .card .mark { width: 120px !important; height: 120px !important; }
+}
+
+/* CONTACT FORM MODAL */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.modal-content {
+  position: relative;
+  background: var(--blanco);
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+}
+
+body[data-theme="dark"] .modal-content {
+  background: var(--bruma);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  padding: 32px 32px 24px;
+  border-bottom: 1px solid var(--tinta-08);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.modal-header h2 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0;
+  color: var(--tinta);
+  letter-spacing: -0.3px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: var(--tinta-60);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: var(--tinta);
+}
+
+.contact-form {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--tinta);
+  letter-spacing: 0.02em;
+}
+
+.form-group input,
+.form-group textarea {
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 12px 16px;
+  border: 1px solid var(--tinta-15);
+  border-radius: 4px;
+  background: var(--blanco);
+  color: var(--tinta);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+body[data-theme="dark"] .form-group input,
+body[data-theme="dark"] .form-group textarea {
+  background: var(--tinta);
+  color: var(--blanco);
+  border-color: var(--tinta-35);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--loden);
+  box-shadow: 0 0 0 3px rgba(77, 93, 69, 0.1);
+}
+
+body[data-theme="dark"] .form-group input:focus,
+body[data-theme="dark"] .form-group textarea:focus {
+  box-shadow: 0 0 0 3px rgba(77, 93, 69, 0.2);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--tinta-50);
+}
+
+.form-error {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #d32f2f;
+  min-height: 16px;
+}
+
+.form-submit {
+  padding: 14px 32px;
+  background: var(--loden);
+  color: var(--blanco);
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.15s;
+  margin-top: 8px;
+}
+
+.form-submit:hover:not(:disabled) {
+  background: var(--loden-dark);
+  transform: translateY(-1px);
+}
+
+.form-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-notice {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--tinta-60);
+  margin: 0;
+  text-align: center;
+}
+
+.success-message {
+  padding: 48px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(77, 93, 69, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: var(--loden);
+  animation: scaleIn 0.4s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-message h3 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0;
+  color: var(--tinta);
+}
+
+.success-message p {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--tinta-60);
+  margin: 0;
+  max-width: 380px;
+}
+
+@media (max-width: 768px) {
+  .modal { padding: 16px; }
+  .modal-content { max-height: 95vh; }
+  .modal-header { padding: 24px 24px 16px; }
+  .modal-header h2 { font-size: 20px; }
+  .contact-form { padding: 24px; }
+}
 </style>
 </head>
 <body data-direction="a">
@@ -1418,10 +1754,18 @@ footer {
   <div class="nav-inner">
     <a href="#" class="nav-logo font-display">tr<span class="ia">IA</span>ge<span class="sup">120</span></a>
     <div class="nav-links">
-      <a href="#practice">The practice</a>
-      <a href="#method">Method</a>
-      <a href="#team">Team</a>
-      <a href="#contact" class="nav-cta">Contact</a>
+      <a href="#practice" data-i18n="nav.practice">The practice</a>
+      <a href="#method" data-i18n="nav.method">Method</a>
+      <a href="#team" data-i18n="nav.team">Team</a>
+      <a href="#contact" class="nav-cta" data-i18n="nav.contact">Contact</a>
+    </div>
+    <div class="nav-controls">
+      <button class="nav-lang-toggle" onclick="toggleLanguage()" aria-label="Toggle language" title="English / Español">
+        <span id="langDisplay">EN</span>
+      </button>
+      <button class="nav-theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Light / Dark">
+        <span id="themeIcon">☀️</span>
+      </button>
     </div>
     <button class="nav-burger" onclick="toggleMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -1429,10 +1773,18 @@ footer {
   </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#practice" onclick="closeMenu()">The practice</a>
-  <a href="#method" onclick="closeMenu()">Method</a>
-  <a href="#team" onclick="closeMenu()">Team</a>
-  <a href="#contact" onclick="closeMenu()">Contact</a>
+  <a href="#practice" onclick="closeMenu()" data-i18n="nav.practice">The practice</a>
+  <a href="#method" onclick="closeMenu()" data-i18n="nav.method">Method</a>
+  <a href="#team" onclick="closeMenu()" data-i18n="nav.team">Team</a>
+  <a href="#contact" onclick="closeMenu()" data-i18n="nav.contact">Contact</a>
+  <div class="mobile-menu-controls">
+    <button class="nav-lang-toggle" onclick="toggleLanguage()" aria-label="Toggle language" title="English / Español">
+      <span id="langDisplay">EN</span>
+    </button>
+    <button class="nav-theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Light / Dark">
+      <span id="themeIcon">☀️</span>
+    </button>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
@@ -1444,16 +1796,16 @@ footer {
       <!-- LEFT (shared) -->
       <div class="hero-left">
         <p class="section-label reveal">trIAge120 — A Practice — Madrid</p>
-        <h1 class="reveal reveal-d1">Production,<br>not pilots.</h1>
+        <h1 class="reveal reveal-d1" data-i18n="hero.headline">Production,<br>not pilots.</h1>
         <div class="stat-bar reveal reveal-d2">
           <span class="number font-display">88%</span>
-          <span class="label">of AI pilots never reach production.</span>
-          <span class="source">IDC</span>
+          <span class="label" data-i18n="hero.stat">of AI pilots never reach production.</span>
+          <span class="source" data-i18n="hero.stat-source">IDC</span>
         </div>
-        <p class="hero-descriptor reveal reveal-d3">A practice for enterprise AI deployment.<br>We build it. We run it. We hand it over.</p>
+        <p class="hero-descriptor reveal reveal-d3" data-i18n="hero.descriptor">A practice for enterprise AI deployment.<br>We build it. We run it. We hand it over.</p>
         <div class="hero-ctas reveal reveal-d4">
-          <a href="#contact" class="btn-primary">Let's talk about the diagnostic</a>
-          <a href="#method" class="cta-text">See the BOT-120 model <span class="arrow">→</span></a>
+          <a href="#contact" class="btn-primary" data-i18n="hero.cta-primary">Let's talk about the diagnostic</a>
+          <a href="#method" class="cta-text" data-i18n="hero.cta-secondary">See the BOT-120 model <span class="arrow">→</span></a>
         </div>
       </div>
 
@@ -1534,13 +1886,13 @@ footer {
   <div class="container">
     <div class="manifesto-grid">
       <div>
-        <p class="section-label reveal">01 · The gap</p>
-        <h2 class="manifesto-title reveal reveal-d1">Enterprise AI has a last-mile problem.</h2>
+        <p class="section-label reveal" data-i18n="manifesto.section-label">01 · The gap</p>
+        <h2 class="manifesto-title reveal reveal-d1" data-i18n="manifesto.title">Enterprise AI has a last-mile problem.</h2>
       </div>
       <div class="manifesto-body reveal reveal-d2">
-        <p>The market is full of slides about AI. We ship the system.</p>
-        <p>Every enterprise we've worked with had the same story: they bought the platform, hired the consultants, ran the pilot — and then nothing moved to production. The gap was never technology. It was the four operational layers that no platform provides and no advisor wants to own: the analytics to know where to start, the delivery discipline to build at enterprise grade, the commercial engine to capture value instead of competing it away, and the strategy to make the whole thing sustainable.</p>
-        <p>trIAge120 is a practice built to close that gap. We don't advise. We build the system, we operate it until it works, and we transfer it to the client — with the methodology, the tooling and the discipline built in. In 120 days. That's the BOT model: Build, Operate, Transfer. It's not a framework on a slide. It's a delivery contract.</p>
+        <p data-i18n="manifesto.doctrine">The market is full of slides about AI. We ship the system.</p>
+        <p data-i18n="manifesto.p1">Every enterprise we've worked with had the same story: they bought the platform, hired the consultants, ran the pilot — and then nothing moved to production. The gap was never technology. It was the four operational layers that no platform provides and no advisor wants to own: the analytics to know where to start, the delivery discipline to build at enterprise grade, the commercial engine to capture value instead of competing it away, and the strategy to make the whole thing sustainable.</p>
+        <p data-i18n="manifesto.p2">trIAge120 is a practice built to close that gap. We don't advise. We build the system, we operate it until it works, and we transfer it to the client — with the methodology, the tooling and the discipline built in. In 120 days. That's the BOT model: Build, Operate, Transfer. It's not a framework on a slide. It's a delivery contract.</p>
       </div>
     </div>
   </div>
@@ -1551,31 +1903,31 @@ footer {
      ═══════════════════════════════════════════════════════════════════════ -->
 <section class="pillars" id="pillars" data-screen-label="Pillars">
   <div class="container">
-    <p class="section-label reveal">02 · What we do</p>
-    <h2 class="pillars-title reveal reveal-d1">Four operational layers no platform provides.</h2>
+    <p class="section-label reveal" data-i18n="pillars.section-label">02 · What we do</p>
+    <h2 class="pillars-title reveal reveal-d1" data-i18n="pillars.title">Four operational layers no platform provides.</h2>
     <div class="pillars-grid">
       <div class="pillar-card reveal">
         <p class="pillar-number">01</p>
-        <h3 class="pillar-name">Analytics</h3>
-        <p class="pillar-desc">Know where to start. Diagnostic, readiness scoring, quantified ROI baseline before anyone deploys.</p>
+        <h3 class="pillar-name" data-i18n="pillar.01.name">Analytics</h3>
+        <p class="pillar-desc" data-i18n="pillar.01.desc">Know where to start. Diagnostic, readiness scoring, quantified ROI baseline before anyone deploys.</p>
       </div>
       <div class="pillar-card reveal reveal-d1">
         <p class="pillar-number">02</p>
-        <h3 class="pillar-name">Delivery</h3>
-        <p class="pillar-desc">Build at enterprise grade. Methodology, multi-agent architecture, QA frameworks, production deployment.</p>
+        <h3 class="pillar-name" data-i18n="pillar.02.name">Delivery</h3>
+        <p class="pillar-desc" data-i18n="pillar.02.desc">Build at enterprise grade. Methodology, multi-agent architecture, QA frameworks, production deployment.</p>
       </div>
       <div class="pillar-card reveal reveal-d2">
         <p class="pillar-number">03</p>
-        <h3 class="pillar-name">Sales</h3>
-        <p class="pillar-desc">Capture value, don't destroy it. Positioning, pricing tools, branded collateral, demand generation.</p>
+        <h3 class="pillar-name" data-i18n="pillar.03.name">Sales</h3>
+        <p class="pillar-desc" data-i18n="pillar.03.desc">Capture value, don't destroy it. Positioning, pricing tools, branded collateral, demand generation.</p>
       </div>
       <div class="pillar-card reveal reveal-d3">
         <p class="pillar-number">04</p>
-        <h3 class="pillar-name">Strategy</h3>
-        <p class="pillar-desc">Make it sustainable. Business model, channel strategy, competitive moat, hybrid AI+human positioning.</p>
+        <h3 class="pillar-name" data-i18n="pillar.04.name">Strategy</h3>
+        <p class="pillar-desc" data-i18n="pillar.04.desc">Make it sustainable. Business model, channel strategy, competitive moat, hybrid AI+human positioning.</p>
       </div>
     </div>
-    <p class="pillars-footer reveal">We provide all four. In 120 days.</p>
+    <p class="pillars-footer reveal" data-i18n="pillars.footer">We provide all four. In 120 days.</p>
   </div>
 </section>
 
@@ -1584,39 +1936,39 @@ footer {
      ═══════════════════════════════════════════════════════════════════════ -->
 <section class="bot-section heavy" id="method" data-screen-label="Method">
   <div class="container">
-    <p class="section-label reveal">03 · How we work</p>
+    <p class="section-label reveal" data-i18n="bot.section-label">03 · How we work</p>
     <div class="bot-header">
-      <h2 class="bot-title reveal">Build · Operate · Transfer.</h2>
-      <p class="bot-desc reveal reveal-d1">We don't hand you a report and wish you luck. We embed with your team, build the system in production, operate it until it works — and transfer the whole thing to you. Methodology, tooling, discipline. Day 121, it's yours.</p>
+      <h2 class="bot-title reveal" data-i18n="bot.title">Build · Operate · Transfer.</h2>
+      <p class="bot-desc reveal reveal-d1" data-i18n="bot.desc">We don't hand you a report and wish you luck. We embed with your team, build the system in production, operate it until it works — and transfer the whole thing to you. Methodology, tooling, discipline. Day 121, it's yours.</p>
     </div>
     <div class="timeline reveal reveal-d2">
       <div class="timeline-step">
         <div class="timeline-dot">M0</div>
-        <p class="timeline-name">Setup</p>
-        <p class="timeline-sub">0 – 14d</p>
+        <p class="timeline-name" data-i18n="bot.m0.name">Setup</p>
+        <p class="timeline-sub" data-i18n="bot.m0.time">0 – 14d</p>
       </div>
       <div class="timeline-step">
         <div class="timeline-dot">M1</div>
-        <p class="timeline-name">Readiness</p>
-        <p class="timeline-sub">14 – 45d</p>
+        <p class="timeline-name" data-i18n="bot.m1.name">Readiness</p>
+        <p class="timeline-sub" data-i18n="bot.m1.time">14 – 45d</p>
       </div>
       <div class="timeline-step">
         <div class="timeline-dot">M2</div>
-        <p class="timeline-name">Activation</p>
-        <p class="timeline-sub">45 – 75d</p>
+        <p class="timeline-name" data-i18n="bot.m2.name">Activation</p>
+        <p class="timeline-sub" data-i18n="bot.m2.time">45 – 75d</p>
       </div>
       <div class="timeline-step">
         <div class="timeline-dot">M3</div>
-        <p class="timeline-name">Validation</p>
-        <p class="timeline-sub">75 – 105d</p>
+        <p class="timeline-name" data-i18n="bot.m3.name">Validation</p>
+        <p class="timeline-sub" data-i18n="bot.m3.time">75 – 105d</p>
       </div>
       <div class="timeline-step">
         <div class="timeline-dot">M4</div>
-        <p class="timeline-name">Transfer</p>
-        <p class="timeline-sub">105 – 120d</p>
+        <p class="timeline-name" data-i18n="bot.m4.name">Transfer</p>
+        <p class="timeline-sub" data-i18n="bot.m4.time">105 – 120d</p>
       </div>
     </div>
-    <p class="bot-punchline reveal">Day 121, it's yours.</p>
+    <p class="bot-punchline reveal" data-i18n="bot.closer">Day 121, it's yours.</p>
   </div>
 </section>
 
@@ -1625,18 +1977,18 @@ footer {
      ═══════════════════════════════════════════════════════════════════════ -->
 <section class="territories" id="territories" data-screen-label="Territories">
   <div class="container">
-    <p class="section-label reveal">04 · Who we work with</p>
-    <h2 class="territories-title reveal reveal-d1">Two deployment territories.</h2>
+    <p class="section-label reveal" data-i18n="territories.section-label">04 · Who we work with</p>
+    <h2 class="territories-title reveal reveal-d1" data-i18n="territories.title">Two deployment territories.</h2>
     <div class="territories-grid">
       <div class="territory-card reveal reveal-d2">
-        <p class="territory-label">Territory 01</p>
-        <h3 class="territory-name">Enterprises</h3>
-        <p class="territory-desc">Companies deploying AI into their operations — from diagnostic to production in 120 days. We close the gap between platform and business impact.</p>
+        <p class="territory-label" data-i18n="territory.01.label">Territory 01</p>
+        <h3 class="territory-name" data-i18n="territory.01.name">Enterprises</h3>
+        <p class="territory-desc" data-i18n="territory.01.desc">Companies deploying AI into their operations — from diagnostic to production in 120 days. We close the gap between platform and business impact.</p>
       </div>
       <div class="territory-card reveal reveal-d3">
-        <p class="territory-label">Territory 02</p>
-        <h3 class="territory-name">BPOs</h3>
-        <p class="territory-desc">Outsourcers turning voice AI into a competitive advantage — not a race to the bottom. Four operational layers that transform a platform into a services moat.</p>
+        <p class="territory-label" data-i18n="territory.02.label">Territory 02</p>
+        <h3 class="territory-name" data-i18n="territory.02.name">BPOs</h3>
+        <p class="territory-desc" data-i18n="territory.02.desc">Outsourcers turning voice AI into a competitive advantage — not a race to the bottom. Four operational layers that transform a platform into a services moat.</p>
       </div>
     </div>
   </div>
@@ -1649,37 +2001,37 @@ footer {
   <div class="container">
     <div class="proof-eyebrow-row">
       <div>
-        <p class="section-label reveal">05 · Proof of work</p>
-        <h2 class="proof-title reveal reveal-d1">Field-tested, not theoretical.</h2>
+        <p class="section-label reveal" data-i18n="proof.section-label">05 · Proof of work</p>
+        <h2 class="proof-title reveal reveal-d1" data-i18n="proof.title">Field-tested, not theoretical.</h2>
       </div>
-      <p class="proof-since reveal reveal-d2">Track record · 2025 – present</p>
+      <p class="proof-since reveal reveal-d2" data-i18n="proof.since">Track record · 2025 – present</p>
     </div>
 
     <!-- Variant A — Magnified stats + industry ledger -->
     <div class="variant variant-a">
       <div class="proof-a-stats reveal">
         <div class="proof-a-stat" data-marker="01">
-          <p class="num font-display">8</p>
-          <p class="lbl">Enterprise accounts opened</p>
+          <p class="num font-display" data-i18n="proof.stat.01.num">8</p>
+          <p class="lbl" data-i18n="proof.stat.01.label">Enterprise accounts opened</p>
         </div>
         <div class="proof-a-stat" data-marker="02">
-          <p class="num font-display">3</p>
-          <p class="lbl">Production deployments live</p>
+          <p class="num font-display" data-i18n="proof.stat.02.num">3</p>
+          <p class="lbl" data-i18n="proof.stat.02.label">Production deployments live</p>
         </div>
         <div class="proof-a-stat" data-marker="03">
-          <p class="num is-final font-display">120</p>
-          <p class="lbl">Days — field-tested model</p>
+          <p class="num is-final font-display" data-i18n="proof.stat.03.num">120</p>
+          <p class="lbl" data-i18n="proof.stat.03.label">Days — field-tested model</p>
         </div>
       </div>
       <div class="proof-a-industries reveal reveal-d1">
-        <span class="item">Insurance</span>
-        <span class="item">Energy</span>
-        <span class="item">Telecom</span>
-        <span class="item">Healthcare</span>
-        <span class="item">Aviation</span>
-        <span class="item">Food delivery</span>
+        <span class="item" data-i18n="proof.industries.1">Insurance</span>
+        <span class="item" data-i18n="proof.industries.2">Energy</span>
+        <span class="item" data-i18n="proof.industries.3">Telecom</span>
+        <span class="item" data-i18n="proof.industries.4">Healthcare</span>
+        <span class="item" data-i18n="proof.industries.5">Aviation</span>
+        <span class="item" data-i18n="proof.industries.6">Food delivery</span>
       </div>
-      <p class="proof-a-caption reveal reveal-d2">Six sectors · One model · Production deployments only</p>
+      <p class="proof-a-caption reveal reveal-d2" data-i18n="proof.caption">Six sectors · One model · Production deployments only</p>
     </div>
 
     <!-- Variant B — Operator ledger table -->
@@ -1758,31 +2110,31 @@ footer {
   <div class="container">
     <div class="team-eyebrow-row">
       <div>
-        <p class="section-label reveal">06 · The partners</p>
-        <h2 class="team-title reveal reveal-d1">Three partners run the four layers.</h2>
+        <p class="section-label reveal" data-i18n="team.section-label">06 · The partners</p>
+        <h2 class="team-title reveal reveal-d1" data-i18n="team.title">Three partners run the four layers.</h2>
       </div>
       <p class="team-stamp reveal reveal-d2">Founding partnership · Madrid · 2026</p>
     </div>
 
-    <!-- Variant A — Photo cards -->
+    <!-- Variant A — Monogram cards -->
     <div class="team-grid-a variant-grid variant-a">
       <div class="card reveal">
-        <img class="team-photo team-photo-a" src="uploads/IP.jpg" alt="Isi Porquicho">
-        <h3 class="name">Isi Porquicho</h3>
-        <p class="role">Partner Sales &amp; Strategy</p>
-        <p class="bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.<br>Stanford GSB · Wharton · IESE.</p>
+        <div class="mark"><img src="uploads/IP.jpg" alt="Isi Porquicho" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+        <h3 class="name" data-i18n="partner.01.name">Isi Porquicho</h3>
+        <p class="role" data-i18n="partner.01.role">CEO · Sales &amp; Strategy</p>
+        <p class="bio"><span data-i18n="partner.01.bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.</span><br><span data-i18n="partner.01.creds">Stanford GSB · Wharton · IESE</span></p>
       </div>
       <div class="card reveal reveal-d1">
-        <img class="team-photo team-photo-a" src="uploads/Arsys08.jpg" alt="Susana Juan">
-        <h3 class="name">Susana Juan</h3>
-        <p class="role">Partner Product Growth &amp; Analytics</p>
-        <p class="bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.<br>MBA · EOI Business School · ISDI Executive AI.</p>
+        <div class="mark"><img src="uploads/Arsys08.jpg" alt="Susana Juan" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+        <h3 class="name" data-i18n="partner.02.name">Susana Juan</h3>
+        <p class="role" data-i18n="partner.02.role">CGO · AI Opportunity &amp; Analytics</p>
+        <p class="bio"><span data-i18n="partner.02.bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.</span><br><span data-i18n="partner.02.creds">MBA · EOI Business School · ISDI Executive AI</span></p>
       </div>
       <div class="card reveal reveal-d2">
-        <img class="team-photo team-photo-a" src="uploads/GA.png" alt="Guillermo Arbelo">
-        <h3 class="name">Guillermo Arbelo</h3>
-        <p class="role">Partner Delivery &amp; Operations</p>
-        <p class="bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.<br>MBA Executive Comillas.</p>
+        <div class="mark"><img src="uploads/GA.png" alt="Guillermo Arbelo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+        <h3 class="name" data-i18n="partner.03.name">Guillermo Arbelo</h3>
+        <p class="role" data-i18n="partner.03.role">Delivery &amp; AI Engineering</p>
+        <p class="bio"><span data-i18n="partner.03.bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.</span><br><span data-i18n="partner.03.creds">MBA Executive Comillas</span></p>
       </div>
     </div>
 
@@ -1790,60 +2142,60 @@ footer {
     <div class="team-grid-b variant-grid variant-b">
       <div class="card reveal">
         <div class="id-col">P-01<span class="num font-display">i</span></div>
-        <div class="mark-col"><img class="team-photo team-photo-b" src="uploads/IP.jpg" alt="Isi Porquicho"></div>
+        <div class="mark-col" style="background: url(uploads/IP.jpg) center/cover; font-size: 0;"></div>
         <div class="body-col">
-          <h3 class="name">Isi Porquicho</h3>
-          <p class="role">Partner Sales &amp; Strategy</p>
-          <p class="bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.<br>Stanford GSB · Wharton · IESE.</p>
+          <h3 class="name" data-i18n="partner.01.name">Isi Porquicho</h3>
+          <p class="role" data-i18n="partner.01.role">CEO · Sales &amp; Strategy</p>
+          <p class="bio"><span data-i18n="partner.01.bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.</span><br><span data-i18n="partner.01.creds">Stanford GSB · Wharton · IESE</span></p>
         </div>
       </div>
       <div class="card reveal reveal-d1">
         <div class="id-col">P-02<span class="num font-display">ii</span></div>
-        <div class="mark-col"><img class="team-photo team-photo-b" src="uploads/Arsys08.jpg" alt="Susana Juan"></div>
+        <div class="mark-col" style="background: url(uploads/Arsys08.jpg) center/cover; font-size: 0;"></div>
         <div class="body-col">
-          <h3 class="name">Susana Juan</h3>
-          <p class="role">Partner Product Growth &amp; Analytics</p>
-          <p class="bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.<br>MBA · EOI Business School · ISDI Executive AI.</p>
+          <h3 class="name" data-i18n="partner.02.name">Susana Juan</h3>
+          <p class="role" data-i18n="partner.02.role">CGO · AI Opportunity &amp; Analytics</p>
+          <p class="bio"><span data-i18n="partner.02.bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.</span><br><span data-i18n="partner.02.creds">MBA · EOI Business School · ISDI Executive AI</span></p>
         </div>
       </div>
       <div class="card reveal reveal-d2">
         <div class="id-col">P-03<span class="num font-display">iii</span></div>
-        <div class="mark-col"><img class="team-photo team-photo-b" src="uploads/GA.png" alt="Guillermo Arbelo"></div>
+        <div class="mark-col" style="background: url(uploads/GA.png) center/cover; font-size: 0;"></div>
         <div class="body-col">
-          <h3 class="name">Guillermo Arbelo</h3>
-          <p class="role">Partner Delivery &amp; Operations</p>
-          <p class="bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.<br>MBA Executive Comillas.</p>
+          <h3 class="name" data-i18n="partner.03.name">Guillermo Arbelo</h3>
+          <p class="role" data-i18n="partner.03.role">Delivery &amp; AI Engineering</p>
+          <p class="bio"><span data-i18n="partner.03.bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.</span><br><span data-i18n="partner.03.creds">MBA Executive Comillas</span></p>
         </div>
       </div>
     </div>
 
-    <!-- Variant C — Display specimen photos -->
+    <!-- Variant C — Display specimen monograms -->
     <div class="team-grid-c variant-grid variant-c">
       <div class="card reveal">
-        <img class="team-photo team-photo-c" src="uploads/IP.jpg" alt="Isi Porquicho">
+        <div class="mark" style="background: url(uploads/IP.jpg) center/cover; font-size: 0;">IP</div>
         <div class="underline"></div>
-        <h3 class="name">Isi Porquicho</h3>
-        <p class="role">Partner Sales &amp; Strategy</p>
-        <p class="bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.<br>Stanford GSB · Wharton · IESE.</p>
+        <h3 class="name" data-i18n="partner.01.name">Isi Porquicho</h3>
+        <p class="role" data-i18n="partner.01.role">CEO · Sales &amp; Strategy</p>
+        <p class="bio"><span data-i18n="partner.01.bio">Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.</span><br><span data-i18n="partner.01.creds">Stanford GSB · Wharton · IESE</span></p>
       </div>
       <div class="card reveal reveal-d1">
-        <img class="team-photo team-photo-c" src="uploads/Arsys08.jpg" alt="Susana Juan">
+        <div class="mark" style="background: url(uploads/Arsys08.jpg) center/cover; font-size: 0;">SJ</div>
         <div class="underline"></div>
-        <h3 class="name">Susana Juan</h3>
-        <p class="role">Partner Product Growth &amp; Analytics</p>
-        <p class="bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.<br>MBA · EOI Business School · ISDI Executive AI.</p>
+        <h3 class="name" data-i18n="partner.02.name">Susana Juan</h3>
+        <p class="role" data-i18n="partner.02.role">CGO · AI Opportunity &amp; Analytics</p>
+        <p class="bio"><span data-i18n="partner.02.bio">Owns the AI opportunity layer — Agentic Readiness scoring, pattern &amp; anomaly detection, ROI modeling per use case. 20+ years in sales, strategy and P&amp;L — Microsoft Spain, Arsys.</span><br><span data-i18n="partner.02.creds">MBA · EOI Business School · ISDI Executive AI</span></p>
       </div>
       <div class="card reveal reveal-d2">
-        <img class="team-photo team-photo-c" src="uploads/GA.png" alt="Guillermo Arbelo">
+        <div class="mark" style="background: url(uploads/GA.png) center/cover; font-size: 0;">GA</div>
         <div class="underline"></div>
-        <h3 class="name">Guillermo Arbelo</h3>
-        <p class="role">Partner Delivery &amp; Operations</p>
-        <p class="bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.<br>MBA Executive Comillas.</p>
+        <h3 class="name" data-i18n="partner.03.name">Guillermo Arbelo</h3>
+        <p class="role" data-i18n="partner.03.role">Delivery &amp; AI Engineering</p>
+        <p class="bio"><span data-i18n="partner.03.bio">Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.</span><br><span data-i18n="partner.03.creds">MBA Executive Comillas</span></p>
       </div>
     </div>
 
     <hr class="team-divider">
-    <p class="team-tagline reveal">Operators, not advisors — three partners who have personally built, sold and run the four layers.</p>
+    <p class="team-tagline reveal" data-i18n="team.tagline">Operators, not advisors — three partners who have personally built, sold and run the four layers.</p>
     <div class="credentials reveal reveal-d1">
       <span class="credential-pill">Stanford GSB</span>
       <span class="credential-pill">Wharton</span>
@@ -1864,33 +2216,33 @@ footer {
      ═══════════════════════════════════════════════════════════════════════ -->
 <section class="contact" id="contact" data-screen-label="Contact">
   <div class="container">
-    <p class="section-label reveal">07 · Get started</p>
-    <h2 class="contact-title reveal reveal-d1">Let's talk about the diagnostic.</h2>
-    <p class="contact-sub reveal reveal-d2">The first step is always the same: understand where you are, quantify the opportunity, and decide if it's worth building.</p>
+    <p class="section-label reveal" data-i18n="contact.section-label">07 · Get started</p>
+    <h2 class="contact-title reveal reveal-d1" data-i18n="contact.title">Let's talk about the diagnostic.</h2>
+    <p class="contact-sub reveal reveal-d2" data-i18n="contact.subtitle">The first step is always the same: understand where you are, quantify the opportunity, and decide if it's worth building.</p>
     <div class="contact-grid">
       <div class="contact-card reveal reveal-d1">
         <div class="contact-icon">
           <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
         </div>
-        <h3 class="contact-card-title">Book a call</h3>
-        <p class="contact-card-desc">30 minutes with one of the partners. No pitch, just diagnostic.</p>
+        <h3 class="contact-card-title" data-i18n="contact.book-title">Book a call</h3>
+        <p class="contact-card-desc" data-i18n="contact.book-desc">30 minutes with one of the partners. No pitch, just diagnostic.</p>
         <a href="#">Schedule on Calendly →</a>
       </div>
       <div class="contact-card reveal reveal-d2">
         <div class="contact-icon">
           <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
         </div>
-        <h3 class="contact-card-title">Email us</h3>
-        <p class="contact-card-desc">For structured proposals or partnership inquiries.</p>
+        <h3 class="contact-card-title" data-i18n="contact.email-title">Email us</h3>
+        <p class="contact-card-desc" data-i18n="contact.email-desc">For structured proposals or partnership inquiries.</p>
         <a href="mailto:hello@triage120.com">hello@triage120.com →</a>
       </div>
       <div class="contact-card reveal reveal-d3">
         <div class="contact-icon">
           <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
         </div>
-        <h3 class="contact-card-title">Quick form</h3>
-        <p class="contact-card-desc">Name, company, and what you need. We'll get back within 24h.</p>
-        <a href="#">Fill the form →</a>
+        <h3 class="contact-card-title" data-i18n="contact.form-title">Quick form</h3>
+        <p class="contact-card-desc" data-i18n="contact.form-desc">Name, company, and what you need. We'll get back within 24h.</p>
+        <a href="#" onclick="openContactForm(event)">Fill the form →</a>
       </div>
     </div>
   </div>
@@ -1900,16 +2252,100 @@ footer {
 <footer>
   <div class="container">
     <div class="footer-inner">
-      <span class="footer-stamp">TRIAGE120 — A PRACTICE — MADRID — EST. 2026</span>
+      <span class="footer-stamp" data-i18n="footer.stamp">TRIAGE120 — A PRACTICE — MADRID — EST. 2026</span>
       <div class="footer-links">
-        <a href="https://linkedin.com" target="_blank">LinkedIn</a>
-        <a href="#">EN</a>
-        <a href="#" style="opacity: 0.2;">ES</a>
+        <a href="https://linkedin.com" target="_blank" data-i18n="footer.linkedin">LinkedIn</a>
       </div>
     </div>
   </div>
 </footer>
 
+<!-- CONTACT FORM MODAL -->
+<div id="contactFormModal" class="modal" style="display: none;">
+  <div class="modal-overlay" onclick="closeContactForm(event)"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 data-i18n="contact.form-modal-title">Let's talk about your AI opportunity</h2>
+      <button class="modal-close" onclick="closeContactForm(event)" aria-label="Close form">×</button>
+    </div>
+    <form id="contactFormElement" class="contact-form" onsubmit="submitContactForm(event)">
+      <div class="form-group">
+        <label for="contactName" data-i18n="contact.form-label-name">Name</label>
+        <input
+          type="text"
+          id="contactName"
+          name="name"
+          required
+          placeholder="Your name"
+          aria-required="true"
+          minlength="2"
+        >
+        <span class="form-error" id="nameError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="contactEmail" data-i18n="contact.form-label-email">Email</label>
+        <input
+          type="email"
+          id="contactEmail"
+          name="email"
+          required
+          placeholder="your@company.com"
+          aria-required="true"
+        >
+        <span class="form-error" id="emailError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="contactCompany" data-i18n="contact.form-label-company">Company</label>
+        <input
+          type="text"
+          id="contactCompany"
+          name="company"
+          required
+          placeholder="Company name"
+          aria-required="true"
+          minlength="2"
+        >
+        <span class="form-error" id="companyError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="contactMessage" data-i18n="contact.form-label-message">What do you need?</label>
+        <textarea
+          id="contactMessage"
+          name="message"
+          required
+          placeholder="Tell us about your AI opportunity..."
+          aria-required="true"
+          minlength="10"
+          rows="4"
+        ></textarea>
+        <span class="form-error" id="messageError"></span>
+      </div>
+
+      <input type="hidden" name="_honeypot" value="">
+
+      <button
+        type="submit"
+        class="form-submit"
+        id="submitBtn"
+        data-i18n="contact.form-submit"
+      >Send message</button>
+
+      <p class="form-notice" data-i18n="contact.form-notice">We'll get back to you within 24 hours.</p>
+    </form>
+
+    <div id="successMessage" class="success-message" style="display: none;">
+      <div class="success-icon">✓</div>
+      <h3 data-i18n="contact.form-success-title">Thank you!</h3>
+      <p data-i18n="contact.form-success-text">We've received your message. We'll be in touch within 24 hours.</p>
+      <button onclick="closeContactForm()" class="btn-primary">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="tweaks-root" style="display: none;"></div>
 
 <script>
 // Scroll reveal
@@ -1936,6 +2372,753 @@ window.addEventListener('load', () => {
     setTimeout(() => el.classList.add('visible'), 80 + i * 50);
   });
 });
+
+// ─── Theme & Language System ────────────────────────────────
+const translations = {
+  en: {
+    'nav.practice': 'The practice',
+    'nav.method': 'Method',
+    'nav.team': 'Team',
+    'nav.contact': 'Contact',
+    'hero.headline': 'Production,\nnot pilots.',
+    'hero.stat': 'of AI pilots never reach production.',
+    'hero.stat-source': 'IDC',
+    'hero.descriptor': 'A practice for enterprise AI deployment.\nWe build it. We run it. We hand it over.',
+    'hero.cta-primary': 'Let\'s talk about the diagnostic',
+    'hero.cta-secondary': 'See the BOT-120 model',
+    'hero.b.record': 'Record · TR120-26-001',
+    'hero.b.status': 'Active',
+    'hero.b.practice': 'Practice',
+    'hero.b.practice-val': 'Madrid, ES · EST. 2026',
+    'hero.b.model': 'Model',
+    'hero.b.model-val': 'BOT-120 — Build · Operate · Transfer',
+    'hero.b.partners': 'Partners',
+    'hero.b.partners-val': '03 · IP · SJ · GA',
+    'hero.b.layers': 'Layers',
+    'hero.b.layers-val': '04 · Analytics · Delivery · Sales · Strategy',
+    'hero.b.sectors': 'Sectors',
+    'hero.b.sectors-val': '06 · Insurance · Energy · Telecom · Healthcare · Aviation · Food delivery',
+    'hero.b.outcome': 'Outcome',
+    'hero.b.outcome-val': 'Day 121 — transferred.',
+    'hero.b.file': 'FILE · TR120-26-001',
+    'hero.b.rev': 'REV. 01',
+    'hero.c.stamp': 'Deployment · No. 120',
+    'hero.c.days': 'Days',
+    'hero.c.build': 'Build',
+    'hero.c.operate': 'Operate',
+    'hero.c.transfer': 'Transfer',
+    'manifesto.section-label': '01 · Manifesto',
+    'manifesto.title': 'Enterprise AI has a last-mile problem.',
+    'manifesto.doctrine': 'The market is full of slides about AI. We ship the system.',
+    'manifesto.p1': 'Every enterprise we\'ve worked with had the same story: they bought the platform, hired the consultants, ran the pilot — and then nothing moved to production. The gap was never technology. It was the four operational layers that no platform provides and no advisor wants to own: the analytics to know where to start, the delivery discipline to build at enterprise grade, the commercial engine to capture value instead of competing it away, and the strategy to make the whole thing sustainable.',
+    'manifesto.p2': 'trIAge120 is a practice built to close that gap. We don\'t advise. We build the system, we operate it until it works, and we transfer it to the client — with the methodology, the tooling and the discipline built in. In 120 days. That\'s the BOT model: Build, Operate, Transfer. It\'s not a framework on a slide. It\'s a delivery contract.',
+    'pillars.section-label': '02 · Four pillars',
+    'pillars.title': 'Four operational layers no platform provides.',
+    'pillar.01.name': 'Analytics',
+    'pillar.01.desc': 'Know where to start. Diagnostic, readiness scoring, quantified ROI baseline before anyone deploys.',
+    'pillar.02.name': 'Delivery',
+    'pillar.02.desc': 'Build at enterprise grade. Methodology, multi-agent architecture, QA frameworks, production deployment.',
+    'pillar.03.name': 'Sales',
+    'pillar.03.desc': 'Capture value, don\'t destroy it. Positioning, pricing tools, branded collateral, demand generation.',
+    'pillar.04.name': 'Strategy',
+    'pillar.04.desc': 'Make it sustainable. Business model, channel strategy, competitive moat, hybrid AI+human positioning.',
+    'pillars.footer': 'We provide all four. In 120 days.',
+    'bot.section-label': '03 · The method',
+    'bot.title': 'Build · Operate · Transfer.',
+    'bot.desc': 'We don\'t hand you a report and wish you luck. We embed with your team, build the system in production, operate it until it works — and transfer the whole thing to you. Methodology, tooling, discipline. Day 121, it\'s yours.',
+    'bot.m0.name': 'Setup',
+    'bot.m0.time': '0 – 14d',
+    'bot.m1.name': 'Readiness',
+    'bot.m1.time': '14 – 45d',
+    'bot.m2.name': 'Activation',
+    'bot.m2.time': '45 – 75d',
+    'bot.m3.name': 'Validation',
+    'bot.m3.time': '75 – 105d',
+    'bot.m4.name': 'Transfer',
+    'bot.m4.time': '105 – 120d',
+    'bot.closer': 'Day 121, it\'s yours.',
+    'territories.section-label': '04 · Where we operate',
+    'territories.title': 'Two deployment territories.',
+    'territory.01.label': 'Territory 01',
+    'territory.01.name': 'Enterprises',
+    'territory.01.desc': 'Companies deploying AI into their operations — from diagnostic to production in 120 days. We close the gap between platform and business impact.',
+    'territory.02.label': 'Territory 02',
+    'territory.02.name': 'BPOs',
+    'territory.02.desc': 'Outsourcers turning voice AI into a competitive advantage — not a race to the bottom. Four operational layers that transform a platform into a services moat.',
+    'proof.section-label': '05 · Proof of work',
+    'proof.title': 'Field-tested, not theoretical.',
+    'proof.since': 'Track record · 2025 – present',
+    'proof.stat.01.num': '8',
+    'proof.stat.01.label': 'Enterprise accounts opened',
+    'proof.stat.02.num': '3',
+    'proof.stat.02.label': 'Production deployments live',
+    'proof.stat.03.num': '120',
+    'proof.stat.03.label': 'Days — field-tested model',
+    'proof.industries.1': 'Insurance',
+    'proof.industries.2': 'Energy',
+    'proof.industries.3': 'Telecom',
+    'proof.industries.4': 'Healthcare',
+    'proof.industries.5': 'Aviation',
+    'proof.industries.6': 'Food delivery',
+    'proof.caption': 'Six sectors · One model · Production deployments only',
+    'proof.b.line1': 'Line 01',
+    'proof.b.line2': 'Line 02',
+    'proof.b.line3': 'Line 03',
+    'proof.b.stat1': 'Enterprise accounts opened',
+    'proof.b.sub1': 'Direct partners · 2025 cohort',
+    'proof.b.stat2': 'Production deployments live',
+    'proof.b.sub2': 'Past pilot · in operations',
+    'proof.b.stat3': 'Field-tested model',
+    'proof.b.sub3': 'Build · Operate · Transfer',
+    'proof.b.status1': 'Open',
+    'proof.b.status2': 'Operating',
+    'proof.b.status3': 'Validated',
+    'proof.b.sectors': 'Sectors deployed',
+    'proof.b.sectors-list': 'Insurance · Energy · Telecom · Healthcare · Aviation · Food delivery',
+    'proof.b.geography': 'Geography',
+    'proof.b.geography-list': 'Spain · EU · LATAM corridor',
+    'proof.b.sources': 'Sources',
+    'proof.b.sources-list': 'Practice internal · IDC · Gartner · a16z',
+    'proof.c.hero-label': 'The number that matters',
+    'proof.c.mini1': 'Enterprise accounts opened',
+    'proof.c.mini2': 'Production deployments live',
+    'proof.c.hero-label-text': 'Days — field-tested model.',
+    'team.section-label': '06 · The partners',
+    'team.title': 'Three partners run the four layers.',
+    'team.tagline': 'Operators, not advisors — three partners who have personally built, sold and run the four layers.',
+    'partner.01.name': 'Isi Porquicho',
+    'partner.01.role': 'CEO · Sales & Strategy',
+    'partner.01.bio': 'Engineer by training (ICAI). 30+ years scaling enterprise technology — Telefónica, Compaq, CloudBlue, Submer. Operated frontier deep-tech as COO of Submer (immersion cooling for AI/HPC datacenters). Turnaround: Submer €3M→€85M in 15 months.',
+    'partner.01.creds': 'Stanford GSB · Wharton · IESE',
+    'partner.02.name': 'Susana Juan',
+    'partner.02.role': 'Chief Commercial Officer · AI Opportunity',
+    'partner.02.bio': 'Bridges business and AI. Translates emerging AI capabilities into enterprise value — from agentic readiness assessment and pattern detection to ROI quantification by use case. 25+ years scaling enterprise sales, go-to-market strategy, and P&L across Microsoft Spain and Arsys. Machine Learning specialist (Stanford) and AI executive (ISDI) with hands-on experience building AI-powered solutions.',
+    'partner.02.creds': 'Stanford ML · ISDI Executive AI · EOI Business School',
+    'partner.03.name': 'Guillermo Arbelo',
+    'partner.03.role': 'Delivery & AI Engineering',
+    'partner.03.bio': 'Engineer by background. Owns the production layer that takes AI from pilot to live — deployment architecture, orchestration, integration, QA frameworks and observability. 20+ years from software development to cloud direction at IONOS/Arsys: release management, Kubernetes, operational continuity at scale.',
+    'partner.03.creds': 'MBA Executive Comillas',
+    'contact.section-label': '07 · Get started',
+    'contact.title': 'Let\'s talk about the diagnostic.',
+    'contact.subtitle': 'The first step is always the same: understand where you are, quantify the opportunity, and decide if it\'s worth building.',
+    'contact.book-title': 'Book a call',
+    'contact.book-desc': '30 minutes with one of the partners. No pitch, just diagnostic.',
+    'contact.email-title': 'Email us',
+    'contact.email-desc': 'For structured proposals or partnership inquiries.',
+    'contact.form-title': 'Quick form',
+    'contact.form-desc': 'Name, company, and what you need. We\'ll get back within 24h.',
+    'contact.form-modal-title': 'Let\'s talk about your AI opportunity',
+    'contact.form-label-name': 'Name',
+    'contact.form-label-email': 'Email',
+    'contact.form-label-company': 'Company',
+    'contact.form-label-message': 'What do you need?',
+    'contact.form-submit': 'Send message',
+    'contact.form-notice': 'We\'ll get back to you within 24 hours.',
+    'contact.form-success-title': 'Thank you!',
+    'contact.form-success-text': 'We\'ve received your message. We\'ll be in touch within 24 hours.',
+    'footer.stamp': 'TRIAGE120 — A PRACTICE — MADRID — EST. 2026',
+    'footer.linkedin': 'LinkedIn',
+  },
+  es: {
+    'nav.practice': 'La práctica',
+    'nav.method': 'Método',
+    'nav.team': 'Equipo',
+    'nav.contact': 'Contacto',
+    'hero.headline': 'Producción,\nno pilotos.',
+    'hero.stat': 'de los pilotos de IA nunca llegan a producción.',
+    'hero.stat-source': 'IDC',
+    'hero.descriptor': 'Una práctica para la implementación de IA empresarial.\nLo construimos. Lo operamos. Te lo entregamos.',
+    'hero.cta-primary': 'Hablemos del diagnóstico',
+    'hero.cta-secondary': 'Ver el modelo BOT-120',
+    'hero.b.record': 'Registro · TR120-26-001',
+    'hero.b.status': 'Activo',
+    'hero.b.practice': 'Práctica',
+    'hero.b.practice-val': 'Madrid, ES · EST. 2026',
+    'hero.b.model': 'Modelo',
+    'hero.b.model-val': 'BOT-120 — Construir · Operar · Transferir',
+    'hero.b.partners': 'Socios',
+    'hero.b.partners-val': '03 · IP · SJ · GA',
+    'hero.b.layers': 'Capas',
+    'hero.b.layers-val': '04 · Analytics · Delivery · Ventas · Estrategia',
+    'hero.b.sectors': 'Sectores',
+    'hero.b.sectors-val': '06 · Seguros · Energía · Telecom · Salud · Aviación · Entregas de comida',
+    'hero.b.outcome': 'Resultado',
+    'hero.b.outcome-val': 'Día 121 — transferido.',
+    'hero.b.file': 'ARCHIVO · TR120-26-001',
+    'hero.b.rev': 'REV. 01',
+    'hero.c.stamp': 'Despliegue · No. 120',
+    'hero.c.days': 'Días',
+    'hero.c.build': 'Construir',
+    'hero.c.operate': 'Operar',
+    'hero.c.transfer': 'Transferir',
+    'manifesto.section-label': '01 · Manifiesto',
+    'manifesto.title': 'La IA empresarial tiene un problema de última milla.',
+    'manifesto.doctrine': 'El mercado está lleno de presentaciones sobre IA. Nosotros entregamos el sistema.',
+    'manifesto.p1': 'Todas las empresas con las que hemos trabajado tenían la misma historia: compraron la plataforma, contrataron consultores, hicieron el piloto — y luego nada llegó a producción. La brecha nunca fue tecnología. Fueron las cuatro capas operativas que ninguna plataforma proporciona y ningún asesor quiere asumir: el analytics para saber dónde empezar, la disciplina de delivery para construir a nivel empresarial, el motor comercial para capturar valor en lugar de competir, y la estrategia para hacerlo sostenible.',
+    'manifesto.p2': 'trIAge120 es una práctica construida para cerrar esa brecha. No asesoramos. Construimos el sistema, lo operamos hasta que funciona, y lo transferimos al cliente — con la metodología, las herramientas y la disciplina incorporadas. En 120 días. Ese es el modelo BOT: Construir, Operar, Transferir. No es un marco en una presentación. Es un contrato de entrega.',
+    'pillars.section-label': '02 · Cuatro pilares',
+    'pillars.title': 'Cuatro capas operativas que ninguna plataforma proporciona.',
+    'pillar.01.name': 'Analytics',
+    'pillar.01.desc': 'Saber dónde empezar. Diagnóstico, puntuación de preparación, base de ROI cuantificada antes de desplegar.',
+    'pillar.02.name': 'Delivery',
+    'pillar.02.desc': 'Construir a nivel empresarial. Metodología, arquitectura multi-agente, marcos QA, despliegue en producción.',
+    'pillar.03.name': 'Sales',
+    'pillar.03.desc': 'Capturar valor, no destruirlo. Posicionamiento, herramientas de precios, colateral de marca, generación de demanda.',
+    'pillar.04.name': 'Strategy',
+    'pillar.04.desc': 'Hacerlo sostenible. Modelo de negocio, estrategia de canal, ventaja competitiva, posicionamiento híbrido IA+humano.',
+    'pillars.footer': 'Proporcionamos los cuatro. En 120 días.',
+    'bot.section-label': '03 · El método',
+    'bot.title': 'Construir · Operar · Transferir.',
+    'bot.desc': 'No te entregamos un informe y te deseamos suerte. Nos integramos con tu equipo, construimos el sistema en producción, lo operamos hasta que funcione — y te transferimos todo. Metodología, herramientas, disciplina. Día 121, es tuyo.',
+    'bot.m0.name': 'Configuración',
+    'bot.m0.time': '0 – 14d',
+    'bot.m1.name': 'Preparación',
+    'bot.m1.time': '14 – 45d',
+    'bot.m2.name': 'Activación',
+    'bot.m2.time': '45 – 75d',
+    'bot.m3.name': 'Validación',
+    'bot.m3.time': '75 – 105d',
+    'bot.m4.name': 'Transferencia',
+    'bot.m4.time': '105 – 120d',
+    'bot.closer': 'Día 121, es tuyo.',
+    'territories.section-label': '04 · Dónde operamos',
+    'territories.title': 'Dos territorios de implementación.',
+    'territory.01.label': 'Territorio 01',
+    'territory.01.name': 'Empresas',
+    'territory.01.desc': 'Empresas que despliegan IA en sus operaciones — del diagnóstico a producción en 120 días. Cerramos la brecha entre plataforma e impacto empresarial.',
+    'territory.02.label': 'Territorio 02',
+    'territory.02.name': 'BPOs',
+    'territory.02.desc': 'Proveedores externalizados que convierten IA de voz en ventaja competitiva — no en una carrera hacia el fondo. Cuatro capas operativas que transforman una plataforma en un foso de servicios.',
+    'proof.section-label': '05 · Prueba',
+    'proof.title': 'Probado en campo, no teórico.',
+    'proof.since': 'Historial · 2025 – presente',
+    'proof.stat.01.num': '8',
+    'proof.stat.01.label': 'Cuentas empresariales abiertas',
+    'proof.stat.02.num': '3',
+    'proof.stat.02.label': 'Despliegues en producción en vivo',
+    'proof.stat.03.num': '120',
+    'proof.stat.03.label': 'Días — modelo probado en campo',
+    'proof.industries.1': 'Seguros',
+    'proof.industries.2': 'Energía',
+    'proof.industries.3': 'Telecom',
+    'proof.industries.4': 'Salud',
+    'proof.industries.5': 'Aviación',
+    'proof.industries.6': 'Entregas de comida',
+    'proof.caption': 'Seis sectores · Un modelo · Solo despliegues en producción',
+    'proof.b.line1': 'Línea 01',
+    'proof.b.line2': 'Línea 02',
+    'proof.b.line3': 'Línea 03',
+    'proof.b.stat1': 'Cuentas empresariales abiertas',
+    'proof.b.sub1': 'Socios directos · Cohorte 2025',
+    'proof.b.stat2': 'Despliegues en producción en vivo',
+    'proof.b.sub2': 'Piloto anterior · en operaciones',
+    'proof.b.stat3': 'Modelo probado en campo',
+    'proof.b.sub3': 'Construir · Operar · Transferir',
+    'proof.b.status1': 'Abierto',
+    'proof.b.status2': 'Operando',
+    'proof.b.status3': 'Validado',
+    'proof.b.sectors': 'Sectores desplegados',
+    'proof.b.sectors-list': 'Seguros · Energía · Telecom · Salud · Aviación · Entregas de comida',
+    'proof.b.geography': 'Geografía',
+    'proof.b.geography-list': 'España · UE · Corredor LATAM',
+    'proof.b.sources': 'Fuentes',
+    'proof.b.sources-list': 'Interno de la práctica · IDC · Gartner · a16z',
+    'proof.c.hero-label': 'El número que importa',
+    'proof.c.mini1': 'Cuentas empresariales abiertas',
+    'proof.c.mini2': 'Despliegues en producción en vivo',
+    'proof.c.hero-label-text': 'Días — modelo probado en campo.',
+    'team.section-label': '06 · Los socios',
+    'team.title': 'Tres socios dirigen las cuatro capas.',
+    'team.tagline': 'Operadores, no asesores — tres socios que han construido, vendido y operado personalmente las cuatro capas.',
+    'partner.01.name': 'Isi Porquicho',
+    'partner.01.role': 'CEO · Ventas & Estrategia',
+    'partner.01.bio': 'Ingeniero de formación (ICAI). Más de 30 años escalando tecnología empresarial — Telefónica, Compaq, CloudBlue, Submer. Operó tecnología fronteriza como COO de Submer (refrigeración por inmersión para datacenters IA/HPC). Turnaround: Submer €3M→€85M en 15 meses.',
+    'partner.01.creds': 'Stanford GSB · Wharton · IESE',
+    'partner.02.name': 'Susana Juan',
+    'partner.02.role': 'Chief Commercial Officer · Oportunidad de IA',
+    'partner.02.bio': 'Conecta negocio e IA. Traduce capacidades emergentes de IA en valor empresarial — desde evaluación de preparación agentica y detección de patrones hasta cuantificación de ROI por caso de uso. Más de 25 años escalando estrategia comercial, go-to-market y P&L en Microsoft España y Arsys. Especialista en Machine Learning (Stanford) e ingeniero de IA (ISDI) con experiencia práctica construyendo soluciones impulsadas por IA.',
+    'partner.02.creds': 'Stanford ML · ISDI Executive AI · EOI Business School',
+    'partner.03.name': 'Guillermo Arbelo',
+    'partner.03.role': 'Delivery & Ingeniería de IA',
+    'partner.03.bio': 'Ingeniero de formación. Propietario de la capa de producción que lleva IA de piloto a producción — arquitectura de despliegue, orquestación, integración, marcos QA y observabilidad. 20+ años desde desarrollo de software hasta dirección en la nube en IONOS/Arsys: gestión de lanzamientos, Kubernetes, continuidad operacional a escala.',
+    'partner.03.creds': 'MBA Executive Comillas',
+    'contact.section-label': '07 · Empezar',
+    'contact.title': 'Hablemos del diagnóstico.',
+    'contact.subtitle': 'El primer paso es siempre el mismo: entender dónde estás, cuantificar la oportunidad y decidir si vale la pena construirlo.',
+    'contact.book-title': 'Reservar una llamada',
+    'contact.book-desc': '30 minutos con uno de los socios. Sin pitch, solo diagnóstico.',
+    'contact.email-title': 'Envíanos un email',
+    'contact.email-desc': 'Para propuestas estructuradas o consultas de asociación.',
+    'contact.form-title': 'Formulario rápido',
+    'contact.form-desc': 'Nombre, empresa y qué necesitas. Responderemos dentro de 24h.',
+    'contact.form-modal-title': 'Hablemos sobre tu oportunidad de IA',
+    'contact.form-label-name': 'Nombre',
+    'contact.form-label-email': 'Email',
+    'contact.form-label-company': 'Empresa',
+    'contact.form-label-message': '¿Qué necesitas?',
+    'contact.form-submit': 'Enviar mensaje',
+    'contact.form-notice': 'Te responderemos dentro de 24 horas.',
+    'contact.form-success-title': '¡Gracias!',
+    'contact.form-success-text': 'Hemos recibido tu mensaje. Nos pondremos en contacto dentro de 24 horas.',
+    'footer.stamp': 'TRIAGE120 — UNA PRÁCTICA — MADRID — EST. 2026',
+    'footer.linkedin': 'LinkedIn',
+  }
+};
+
+let currentLanguage = 'en';
+let currentTheme = 'light';
+
+function initializePreferences() {
+  const savedLang = localStorage.getItem('triage120_lang') || 'en';
+  const savedTheme = localStorage.getItem('triage120_theme') || 'light';
+
+  currentLanguage = savedLang;
+  currentTheme = savedTheme;
+
+  if (currentTheme === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeIcon').textContent = '🌙';
+  }
+
+  updateLanguage(currentLanguage);
+}
+
+function toggleLanguage() {
+  // Click EN to switch to English, click ES to switch to Spanish
+  const btn = event.target.closest('.nav-lang-toggle');
+  if (!btn) return;
+
+  // If clicking while in Spanish, go to English
+  if (currentLanguage === 'es') {
+    currentLanguage = 'en';
+  } else {
+    // If clicking while in English, go to Spanish
+    currentLanguage = 'es';
+  }
+
+  localStorage.setItem('triage120_lang', currentLanguage);
+  document.documentElement.lang = currentLanguage;
+  // Show the OTHER language (the one you can switch to)
+  const nextLang = currentLanguage === 'en' ? 'ES' : 'EN';
+  document.getElementById('langDisplay').textContent = nextLang;
+  updateLanguage(currentLanguage);
+}
+
+function toggleTheme() {
+  currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+  localStorage.setItem('triage120_theme', currentTheme);
+
+  if (currentTheme === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeIcon').textContent = '🌙';
+  } else {
+    document.body.removeAttribute('data-theme');
+    document.getElementById('themeIcon').textContent = '☀️';
+  }
+}
+
+function updateLanguage(lang) {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang] && translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+  document.documentElement.lang = lang;
+  // Show the OTHER language (the one you can switch to)
+  const nextLang = lang === 'en' ? 'ES' : 'EN';
+  document.getElementById('langDisplay').textContent = nextLang;
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', initializePreferences);
+
+// ─── Contact Form Modal ────────────────────────────────
+function openContactForm(event) {
+  event.preventDefault();
+  const modal = document.getElementById('contactFormModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('contactName').focus();
+}
+
+function closeContactForm(event) {
+  if (event) event.preventDefault();
+  const modal = document.getElementById('contactFormModal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  document.getElementById('contactFormElement').reset();
+  document.getElementById('successMessage').style.display = 'none';
+  document.getElementById('contactFormElement').style.display = 'flex';
+  clearAllErrors();
+}
+
+function clearAllErrors() {
+  document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+}
+
+function validateEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
+
+function submitContactForm(event) {
+  event.preventDefault();
+  clearAllErrors();
+
+  const name = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const company = document.getElementById('contactCompany').value.trim();
+  const message = document.getElementById('contactMessage').value.trim();
+  const honeypot = document.querySelector('input[name="_honeypot"]').value;
+
+  let isValid = true;
+
+  // Honeypot check
+  if (honeypot) return false;
+
+  // Validations
+  if (!name || name.length < 2) {
+    document.getElementById('nameError').textContent = 'Please enter a valid name (at least 2 characters)';
+    isValid = false;
+  }
+
+  if (!email || !validateEmail(email)) {
+    document.getElementById('emailError').textContent = 'Please enter a valid email address';
+    isValid = false;
+  }
+
+  if (!company || company.length < 2) {
+    document.getElementById('companyError').textContent = 'Please enter a valid company name (at least 2 characters)';
+    isValid = false;
+  }
+
+  if (!message || message.length < 10) {
+    document.getElementById('messageError').textContent = 'Please enter a message (at least 10 characters)';
+    isValid = false;
+  }
+
+  if (!isValid) return false;
+
+  // Submit
+  submitForm(name, email, company, message);
+  return false;
+}
+
+function submitForm(name, email, company, message) {
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending...';
+
+  const data = {
+    name,
+    email,
+    company,
+    message,
+    timestamp: new Date().toISOString(),
+    language: currentLanguage,
+    theme: currentTheme
+  };
+
+  // Save to localStorage (for demo purposes)
+  const submissions = JSON.parse(localStorage.getItem('contactFormSubmissions') || '[]');
+  submissions.push(data);
+  localStorage.setItem('contactFormSubmissions', JSON.stringify(submissions));
+
+  // Simulate network delay
+  setTimeout(() => {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send message';
+
+    // Show success message
+    document.getElementById('contactFormElement').style.display = 'none';
+    document.getElementById('successMessage').style.display = 'flex';
+
+    // Log submission (for backend integration)
+    console.log('Form submitted:', data);
+
+    // Optional: Send to backend
+    // fetch('/api/contact', { method: 'POST', body: JSON.stringify(data) })
+  }, 800);
+}
+
+// Close modal on overlay click
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('contactFormModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal.querySelector('.modal-overlay')) {
+        closeContactForm();
+      }
+    });
+  }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('contactFormModal');
+    if (modal && modal.style.display !== 'none') {
+      closeContactForm();
+    }
+  }
+});
+</script>
+
+<script type="text/babel">
+// ─── Tweaks Panel (inlined from tweaks-panel.jsx) ────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    transform:scale(var(--dc-inv-zoom,1));transform-origin:bottom right;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+  .twk-field{appearance:none;box-sizing:border-box;width:100%;min-width:0;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;overflow-wrap:anywhere}
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+`;
+
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+    window.dispatchEvent(new CustomEvent('tweakchange', { detail: edits }));
+  }, []);
+  return [values, setTweak];
+}
+
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  // Auto-open when loaded standalone (not inside an iframe host)
+  React.useEffect(() => {
+    if (window.parent === window) setOpen(true);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel"
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">
+          {children}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function TweakSection({ label }) {
+  return <div className="twk-sect">{label}</div>;
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+// ─── App ─────────────────────────────────────────────────────────────────────
+
+const TWEAK_DEFAULTS = { "direction": "A · Editorial Refined" };
+
+const DIRECTION_TO_KEY = {
+  "A · Editorial Refined": "a",
+  "B · Operator Ledger": "b",
+  "C · Display Specimen": "c"
+};
+
+function TweaksApp() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    const key = DIRECTION_TO_KEY[t.direction] || "a";
+    document.body.setAttribute("data-direction", key);
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.reveal').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          el.classList.add('visible');
+        }
+      });
+    });
+  }, [t.direction]);
+
+  return (
+    <TweaksPanel title="Direction">
+      <TweakSection label="Overall feel" />
+      <TweakSelect
+        label="Direction"
+        value={t.direction}
+        options={Object.keys(DIRECTION_TO_KEY)}
+        onChange={(v) => setTweak('direction', v)}
+      />
+      <div style={{
+        marginTop: 4, fontSize: 11, lineHeight: 1.5,
+        color: 'rgba(41,38,27,.62)',
+        fontFamily: 'ui-sans-serif,system-ui,sans-serif'
+      }}>
+        <b style={{display:'block', fontSize:10, letterSpacing:'.08em', textTransform:'uppercase', color:'rgba(41,38,27,.45)', marginBottom:6}}>What changes</b>
+        Hero right side · Proof section · Team section.<br />
+        Manifesto, pillars, BOT, territories, contact stay constant.
+      </div>
+    </TweaksPanel>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('tweaks-root'));
+root.render(<TweaksApp />);
 </script>
 
 </body>
