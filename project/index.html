@@ -2249,7 +2249,7 @@ body[data-theme="dark"] .form-group textarea:focus {
         </div>
         <h3 class="contact-card-title" data-i18n="contact.email-title">Email us</h3>
         <p class="contact-card-desc" data-i18n="contact.email-desc">For structured proposals or partnership inquiries.</p>
-        <a href="mailto:susana@triage120.com">susana@triage120.com →</a>
+        <a href="mailto:contacto@triage120.com">contacto@triage120.com →</a>
       </div>
       <div class="contact-card reveal reveal-d3">
         <div class="contact-icon">
@@ -2283,7 +2283,7 @@ body[data-theme="dark"] .form-group textarea:focus {
       <h2 data-i18n="contact.form-modal-title">Let's talk about your AI opportunity</h2>
       <button class="modal-close" onclick="closeContactForm(event)" aria-label="Close form">×</button>
     </div>
-    <form id="contactFormElement" class="contact-form" action="https://formsubmit.co/susana@triage120.com" method="POST" onsubmit="submitContactForm(event)">
+    <form id="contactFormElement" class="contact-form" action="https://formsubmit.co/contacto@triage120.com" method="POST" onsubmit="submitContactForm(event)">
       <div class="form-group">
         <label for="contactName" data-i18n="contact.form-label-name">Name</label>
         <input
@@ -2830,7 +2830,7 @@ function submitForm(name, email, company, message) {
   formData.append('message', message);
   formData.append('_captcha', 'false');
 
-  fetch('https://formsubmit.co/susana@triage120.com', {
+  fetch('https://formsubmit.co/contacto@triage120.com', {
     method: 'POST',
     body: formData
   })
