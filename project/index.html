@@ -238,8 +238,8 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
 }
 .nav-logo {
   font-family: var(--font-display);
-  font-size: 22px; color: var(--tinta);
-  text-decoration: none; letter-spacing: -0.5px;
+  font-size: 28px; color: var(--tinta);
+  text-decoration: none; letter-spacing: -0.5px; line-height: 1;
 }
 .nav-logo .ia { color: var(--loden); font-weight: 700; }
 .nav-logo .sup { font-size: 13px; vertical-align: super; }
@@ -2226,7 +2226,7 @@ body[data-theme="dark"] .form-group textarea:focus {
         </div>
         <h3 class="contact-card-title" data-i18n="contact.book-title">Book a call</h3>
         <p class="contact-card-desc" data-i18n="contact.book-desc">30 minutes with one of the partners. No pitch, just diagnostic.</p>
-        <a href="#">Schedule on Calendly →</a>
+        <a href="https://www.cal.eu/susana-triage120" target="_blank">Schedule on Cal →</a>
       </div>
       <div class="contact-card reveal reveal-d2">
         <div class="contact-icon">
@@ -2234,7 +2234,7 @@ body[data-theme="dark"] .form-group textarea:focus {
         </div>
         <h3 class="contact-card-title" data-i18n="contact.email-title">Email us</h3>
         <p class="contact-card-desc" data-i18n="contact.email-desc">For structured proposals or partnership inquiries.</p>
-        <a href="mailto:hello@triage120.com">hello@triage120.com →</a>
+        <a href="mailto:susana@triage120.com">susana@triage120.com →</a>
       </div>
       <div class="contact-card reveal reveal-d3">
         <div class="contact-icon">
@@ -2268,7 +2268,7 @@ body[data-theme="dark"] .form-group textarea:focus {
       <h2 data-i18n="contact.form-modal-title">Let's talk about your AI opportunity</h2>
       <button class="modal-close" onclick="closeContactForm(event)" aria-label="Close form">×</button>
     </div>
-    <form id="contactFormElement" class="contact-form" onsubmit="submitContactForm(event)">
+    <form id="contactFormElement" class="contact-form" action="https://formsubmit.co/susana@triage120.com" method="POST" onsubmit="submitContactForm(event)">
       <div class="form-group">
         <label for="contactName" data-i18n="contact.form-label-name">Name</label>
         <input
@@ -2808,23 +2808,18 @@ function submitForm(name, email, company, message) {
   submitBtn.disabled = true;
   submitBtn.textContent = 'Sending...';
 
-  const data = {
-    name,
-    email,
-    company,
-    message,
-    timestamp: new Date().toISOString(),
-    language: currentLanguage,
-    theme: currentTheme
-  };
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('email', email);
+  formData.append('company', company);
+  formData.append('message', message);
+  formData.append('_captcha', 'false');
 
-  // Save to localStorage (for demo purposes)
-  const submissions = JSON.parse(localStorage.getItem('contactFormSubmissions') || '[]');
-  submissions.push(data);
-  localStorage.setItem('contactFormSubmissions', JSON.stringify(submissions));
-
-  // Simulate network delay
-  setTimeout(() => {
+  fetch('https://formsubmit.co/susana@triage120.com', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Send message';
 
@@ -2832,12 +2827,15 @@ function submitForm(name, email, company, message) {
     document.getElementById('contactFormElement').style.display = 'none';
     document.getElementById('successMessage').style.display = 'flex';
 
-    // Log submission (for backend integration)
-    console.log('Form submitted:', data);
-
-    // Optional: Send to backend
-    // fetch('/api/contact', { method: 'POST', body: JSON.stringify(data) })
-  }, 800);
+    // Clear form
+    document.getElementById('contactFormElement').reset();
+  })
+  .catch(error => {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send message';
+    alert('Error sending message. Please try again.');
+    console.error('Form submission error:', error);
+  });
 }
 
 // Close modal on overlay click
