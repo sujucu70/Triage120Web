@@ -234,34 +234,49 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
 .nav-inner {
   max-width: var(--container-max); margin: 0 auto;
   padding: 0 var(--container-pad); height: 64px;
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; gap: 48px;
 }
 .nav-logo {
   font-family: var(--font-display);
   font-size: 28px; color: var(--tinta);
   text-decoration: none; letter-spacing: -0.5px; line-height: 1;
+  flex-shrink: 0;
 }
 .nav-logo .ia { color: var(--loden); font-weight: 700; }
 .nav-logo .sup { font-size: 13px; vertical-align: super; }
 
-.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links {
+  display: flex; align-items: center; gap: 32px;
+  flex: 1;
+  margin-left: 0;
+}
 .nav-links a {
   font-family: var(--font-mono);
   font-size: 12px; letter-spacing: 0.04em;
   color: var(--tinta); text-decoration: none;
   opacity: 0.6; transition: opacity 0.25s;
+  white-space: nowrap;
 }
 .nav-links a:hover { opacity: 1; }
-.nav-links .nav-cta {
-  opacity: 1; color: var(--loden);
-  border: 1px solid var(--loden);
-  padding: 6px 16px; border-radius: 2px;
-  transition: background 0.25s, color 0.25s;
-}
-.nav-links .nav-cta:hover { background: var(--loden); color: var(--blanco); }
 
 .nav-controls {
   display: flex; align-items: center; gap: 16px;
+  padding-left: 16px;
+  border-left: 1px solid var(--tinta-08);
+}
+
+.nav-cta-button {
+  font-family: var(--font-mono);
+  font-size: 12px; letter-spacing: 0.04em;
+  color: var(--blanco); background: var(--loden);
+  border: none; padding: 8px 20px; border-radius: 2px;
+  text-decoration: none; cursor: pointer;
+  transition: background 0.25s, transform 0.25s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.nav-cta-button:hover {
+  background: var(--loden-dark);
+  transform: translateY(-1px);
 }
 .nav-lang-toggle,
 .nav-theme-toggle {
@@ -315,8 +330,9 @@ nav.scrolled { box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
 @media (max-width: 768px) {
   .nav-links { display: none; }
   .nav-controls { display: none; }
+  .nav-cta-button { display: none; }
   .nav-burger { display: block; }
-  .nav-inner { padding: 0 24px; }
+  .nav-inner { padding: 0 24px; gap: 16px; }
   .mobile-menu.open .mobile-menu-controls { display: flex; }
 }
 
@@ -1757,7 +1773,6 @@ body[data-theme="dark"] .form-group textarea:focus {
       <a href="#practice" data-i18n="nav.practice">The practice</a>
       <a href="#method" data-i18n="nav.method">Method</a>
       <a href="#team" data-i18n="nav.team">Team</a>
-      <a href="#contact" class="nav-cta" data-i18n="nav.contact">Contact</a>
     </div>
     <div class="nav-controls">
       <button class="nav-lang-toggle" onclick="toggleLanguage()" aria-label="Toggle language" title="English / Español">
@@ -1767,6 +1782,7 @@ body[data-theme="dark"] .form-group textarea:focus {
         <span id="themeIcon">☀️</span>
       </button>
     </div>
+    <a href="#contact" class="nav-cta-button" data-i18n="nav.contact">Contact</a>
     <button class="nav-burger" onclick="toggleMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -1776,7 +1792,6 @@ body[data-theme="dark"] .form-group textarea:focus {
   <a href="#practice" onclick="closeMenu()" data-i18n="nav.practice">The practice</a>
   <a href="#method" onclick="closeMenu()" data-i18n="nav.method">Method</a>
   <a href="#team" onclick="closeMenu()" data-i18n="nav.team">Team</a>
-  <a href="#contact" onclick="closeMenu()" data-i18n="nav.contact">Contact</a>
   <div class="mobile-menu-controls">
     <button class="nav-lang-toggle" onclick="toggleLanguage()" aria-label="Toggle language" title="English / Español">
       <span id="langDisplay">EN</span>
